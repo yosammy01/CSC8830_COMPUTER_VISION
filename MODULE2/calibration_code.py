@@ -1,6 +1,23 @@
 import numpy as np
 import cv2
 import glob
+import sys
+
+# Custom logger to print to both terminal and a file
+class Logger(object):
+    def __init__(self, filename):
+        self.terminal = sys.stdout
+        self.log = open(filename, "w")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
+sys.stdout = Logger("calibration_output.txt")
 
 # ==========================================
 # 1. Configuration (Matches custom PDF)
@@ -16,11 +33,11 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 # ==========================================
 # Creates a grid of coordinates: (0,0,0), (25,0,0), (50,0,0)...
 objp = np.zeros((CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
-print("objp after line 18:\n", objp)
+#print("objp after line 18:\n", objp)
 objp[:, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
-print("objp after line 19:\n", objp)
+#print("objp after line 19:\n", objp)
 objp = objp * SQUARE_SIZE_MM # Scale by 25mm to get real-world units
-print("objp after line 20:\n", objp)
+#print("objp after line 20:\n", objp)
 
 # Arrays to store object points and image points from all images
 objpoints = [] # 3D points in real world space
@@ -59,9 +76,9 @@ for fname in images:
 
 cv2.destroyAllWindows()
 
-print("objpoints (last grid):\n", objpoints[-1])
-print("original_corners (last image grid):\n", original_corners)
-print("corners2 (last image grid):\n", corners2)
+#print("objpoints (last grid):\n", objpoints[-1])
+#print("original_corners (last image grid):\n", original_corners)
+#print("corners2 (last image grid):\n", corners2)
 
 # ==========================================
 # 4. Perform Calibration Math

@@ -1,0 +1,11 @@
+Found 14 images. Processing...
+
+=== Calibration Successful ===
+
+Camera Matrix (Intrinsic Parameters): 
+ [[3.11095838e+03 0.00000000e+00 1.47352465e+03]
+ [0.00000000e+00 3.10685602e+03 2.00792389e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]
+
+Distortion Coefficients: 
+ [[-0.01423386  0.26873262  0.00137658 -0.00078449 -0.42944935]]
