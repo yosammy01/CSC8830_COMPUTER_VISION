@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import glob
 import sys
+import json
 
 # Custom logger to print to both terminal and a file
 class Logger(object):
@@ -92,11 +93,15 @@ if len(objpoints) > 0:
     print("\nCamera Matrix (Intrinsic Parameters): \n", camera_matrix)
     print("\nDistortion Coefficients: \n", dist_coeffs)
     
-    # Save arrays into a single compressed file
-    np.savez("calibration_params.npz", 
-             camera_matrix=camera_matrix, 
-             dist_coeffs=dist_coeffs)
-    print("Saved camera matrix and distortion coefficients to 'calibration_params.npz'")
+    # Convert numpy arrays to lists for JSON serialization
+    calibration_data = {
+        "camera_matrix": camera_matrix.tolist(),
+        "dist_coeffs": dist_coeffs.tolist()
+    }
+    
+    with open("calibration_params.json", "w") as f:
+        json.dump(calibration_data, f, indent=4)
+    print("Saved parameters to 'calibration_params.json'")
 else:
     print("\nError: OpenCV could not find the checkerboard pattern in any of the images.")
     print("Ensure photos are well-lit, the board is perfectly flat, and the entire grid is visible.")
