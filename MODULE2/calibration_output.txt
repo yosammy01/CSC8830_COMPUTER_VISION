@@ -8,4 +8,5 @@ Camera Matrix (Intrinsic Parameters):
  [0.00000000e+00 0.00000000e+00 1.00000000e+00]]
 
 Distortion Coefficients: 
- [[-0.01423386  0.26873262  0.00137658 -0.00078449 -0.42944935]]
+ [[-0.01423386  0.26873264  0.00137658 -0.00078449 -0.42944938]]
+Saved camera matrix and distortion coefficients to 'calibration_params.npz'
