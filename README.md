@@ -1,0 +1,2 @@
+# CSC8830_COMPUTER_VISION
+Mini-Project Modules
