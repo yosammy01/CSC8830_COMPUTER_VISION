@@ -1,0 +1,7 @@
+Found 1 images. Calculating dimensions...
+
+Total raw contours found: 426
+File: book.jpg
+   Pixel Dimensions: 160px wide, 252px high
+   Real Dimensions:  109.73mm wide, 173.06mm high
+
