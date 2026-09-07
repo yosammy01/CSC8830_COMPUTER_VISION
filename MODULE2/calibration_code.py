@@ -101,7 +101,7 @@ if len(objpoints) > 0:
     
     with open("calibration_params.json", "w") as f:
         json.dump(calibration_data, f, indent=4)
-    print("Saved parameters to 'calibration_params.json'")
+    print("\nSaved parameters to 'calibration_params.json'")
 else:
     print("\nError: OpenCV could not find the checkerboard pattern in any of the images.")
     print("Ensure photos are well-lit, the board is perfectly flat, and the entire grid is visible.")

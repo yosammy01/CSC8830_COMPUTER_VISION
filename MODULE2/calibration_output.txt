@@ -8,5 +8,6 @@ Camera Matrix (Intrinsic Parameters):
  [0.00000000e+00 0.00000000e+00 1.00000000e+00]]
 
 Distortion Coefficients: 
- [[-0.01423386  0.26873264  0.00137658 -0.00078449 -0.42944938]]
+ [[-0.01423386  0.26873263  0.00137658 -0.00078449 -0.42944937]]
+
 Saved parameters to 'calibration_params.json'
