@@ -1,7 +1,52 @@
-Found 1 images. Calculating dimensions...
+Found 10 images. Calculating dimensions...
 
-Total raw contours found: 426
+Total raw contours found: 792
+File: air_purifier.jpg
+   Pixel Dimensions: 382px wide, 519px high
+   Real Dimensions:  261.99mm wide, 356.42mm high
+
+Total raw contours found: 795
+File: black_box.jpg
+   Pixel Dimensions: 325px wide, 396px high
+   Real Dimensions:  222.90mm wide, 271.95mm high
+
+Total raw contours found: 766
 File: book.jpg
-   Pixel Dimensions: 160px wide, 252px high
-   Real Dimensions:  109.73mm wide, 173.06mm high
+   Pixel Dimensions: 159px wide, 255px high
+   Real Dimensions:  109.05mm wide, 175.12mm high
+
+Total raw contours found: 697
+File: box.jpg
+   Pixel Dimensions: 354px wide, 482px high
+   Real Dimensions:  242.79mm wide, 331.01mm high
+
+Total raw contours found: 706
+File: clock_radio.jpg
+   Pixel Dimensions: 151px wide, 182px high
+   Real Dimensions:  103.56mm wide, 124.99mm high
+
+Total raw contours found: 276
+File: large_circle_lid.jpg
+   Pixel Dimensions: 493px wide, 500px high
+   Real Dimensions:  338.12mm wide, 343.37mm high
+
+Total raw contours found: 850
+File: large_rectangle_lid.jpg
+   Pixel Dimensions: 345px wide, 278px high
+   Real Dimensions:  236.61mm wide, 190.91mm high
+
+Total raw contours found: 793
+File: small_circle_lid.jpg
+   Pixel Dimensions: 216px wide, 222px high
+   Real Dimensions:  148.14mm wide, 152.46mm high
+
+Total raw contours found: 725
+File: small_rectangle_lid.jpg
+   Pixel Dimensions: 270px wide, 207px high
+   Real Dimensions:  185.18mm wide, 142.16mm high
+
+Total raw contours found: 683
+File: table_top.jpg
+   Pixel Dimensions: 668px wide, 507px high
+   Real Dimensions:  458.14mm wide, 348.18mm high
 
