@@ -53,9 +53,13 @@ for img_path in image_files:
     if img is None:
         continue
         
+    # 1. Get the height and width of the image in pixels (ignoring color channels)
     h_img, w_img = img.shape[:2]
         
+    # 2. Un-bend the image to fix lens distortion using camera calibration data (K and dist)
     undistorted = cv2.undistort(img, K, dist, None, K)
+    
+    # 3. Convert the color image to grayscale (black and white) because thresholding needs a 1-channel image
     gray = cv2.cvtColor(undistorted, cv2.COLOR_BGR2GRAY)
     
     # Smooth slightly to cut down on concrete texture noise

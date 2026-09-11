@@ -1,4 +1,4 @@
-Found 10 images. Calculating dimensions...
+Found 20 images. Calculating dimensions...
 
 Total raw contours found: 792
 File: air_purifier.jpg
@@ -20,6 +20,16 @@ File: box.jpg
    Pixel Dimensions: 354px wide, 482px high
    Real Dimensions:  242.79mm wide, 331.01mm high
 
+Total raw contours found: 839
+File: brick.jpg
+   Pixel Dimensions: 284px wide, 135px high
+   Real Dimensions:  194.78mm wide, 92.71mm high
+
+Total raw contours found: 894
+File: catalog_case.jpg
+   Pixel Dimensions: 638px wide, 524px high
+   Real Dimensions:  437.56mm wide, 359.85mm high
+
 Total raw contours found: 706
 File: clock_radio.jpg
    Pixel Dimensions: 151px wide, 182px high
@@ -35,6 +45,26 @@ File: large_rectangle_lid.jpg
    Pixel Dimensions: 345px wide, 278px high
    Real Dimensions:  236.61mm wide, 190.91mm high
 
+Total raw contours found: 737
+File: remote_control.jpg
+   Pixel Dimensions: 236px wide, 72px high
+   Real Dimensions:  161.86mm wide, 49.45mm high
+
+Total raw contours found: 733
+File: rice_cooker.jpg
+   Pixel Dimensions: 286px wide, 217px high
+   Real Dimensions:  196.15mm wide, 149.02mm high
+
+Total raw contours found: 651
+File: sandal.jpg
+   Pixel Dimensions: 410px wide, 136px high
+   Real Dimensions:  281.19mm wide, 93.40mm high
+
+Total raw contours found: 793
+File: shoe_box.jpg
+   Pixel Dimensions: 461px wide, 171px high
+   Real Dimensions:  316.17mm wide, 117.43mm high
+
 Total raw contours found: 793
 File: small_circle_lid.jpg
    Pixel Dimensions: 216px wide, 222px high
@@ -44,6 +74,26 @@ Total raw contours found: 725
 File: small_rectangle_lid.jpg
    Pixel Dimensions: 270px wide, 207px high
    Real Dimensions:  185.18mm wide, 142.16mm high
+
+Total raw contours found: 789
+File: small_safe.jpg
+   Pixel Dimensions: 447px wide, 364px high
+   Real Dimensions:  306.57mm wide, 249.97mm high
+
+Total raw contours found: 685
+File: smart_phone.jpg
+   Pixel Dimensions: 111px wide, 226px high
+   Real Dimensions:  76.13mm wide, 155.20mm high
+
+Total raw contours found: 669
+File: speaker_box.jpg
+   Pixel Dimensions: 293px wide, 304px high
+   Real Dimensions:  200.95mm wide, 208.77mm high
+
+Total raw contours found: 759
+File: sponge.jpg
+   Pixel Dimensions: 146px wide, 91px high
+   Real Dimensions:  100.13mm wide, 62.49mm high
 
 Total raw contours found: 683
 File: table_top.jpg
