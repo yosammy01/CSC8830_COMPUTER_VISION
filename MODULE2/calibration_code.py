@@ -1,3 +1,15 @@
+"""
+ReadMe Documentation
+====================
+Script: calibration_code.py
+Purpose: Performs camera calibration using checkerboard images to calculate the camera matrix and distortion coefficients.
+
+Execution Instructions:
+1. Place your checkerboard calibration images in the 'images/' directory.
+2. Execute the script from the terminal:
+       python calibration_code.py
+3. The script will generate 'calibration_params.json' which is required by the dimension measurement script.
+"""
 import numpy as np
 import cv2
 import glob

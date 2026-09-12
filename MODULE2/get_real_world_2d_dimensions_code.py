@@ -1,3 +1,16 @@
+"""
+ReadMe Documentation
+====================
+Script: get_real_world_2d_dimensions_code.py
+Purpose: Calculates the real-world 2D dimensions of objects using camera calibration data.
+
+Execution Instructions:
+1. Ensure you have run 'calibration_code.py' first so that 'calibration_params.json' exists.
+2. Place your measurement images in the 'measurements/' directory.
+3. Execute the script from the terminal:
+       python get_real_world_2d_dimensions_code.py
+4. The script will display bounding boxes over the detected objects. Press any key to proceed to the next image.
+"""
 import cv2
 import numpy as np
 import json
