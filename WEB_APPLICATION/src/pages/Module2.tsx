@@ -24,7 +24,7 @@ const Module2App: React.FC = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
             <a href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE2" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#1f2937', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>GitHub Repo</a>
-            <a href="/Module2_Report.pdf" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Final PDF</a>
+            <a href={`${import.meta.env.BASE_URL}Module2_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Final PDF</a>
           </div>
         </section>
 
@@ -52,10 +52,10 @@ const Module2App: React.FC = () => {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <img src="/real_world_dimensions.png" alt="Real World Dimensions" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
-            <img src="/projected_dimensions.png" alt="Projected Dimensions" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
-            <img src="/percent_error.png" alt="Percent Error" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
-            <img src="/Error_Statistics.png" alt="Error Statistics" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}real_world_dimensions.png`} alt="Real World Dimensions" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}projected_dimensions.png`} alt="Projected Dimensions" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}percent_error.png`} alt="Percent Error" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}Error_Statistics.png`} alt="Error Statistics" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
           </div>
         </section>
 
