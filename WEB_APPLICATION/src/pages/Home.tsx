@@ -27,17 +27,21 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
-          <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 3: Image Blurring</h3>
-            <p className="text-gray-400">
-              A demonstration of image blurring using a filtering approach.
-            </p>
+        <section className="bg-white p-8 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h3 className="text-2xl font-semibold mb-2 text-gray-800">Module 3: Image Blurring</h3>
+              <p className="text-gray-600">
+                A demonstration of image blurring using a filtering approach.
+              </p>
+            </div>
+            <Link
+              to="/module3"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
+            >
+              View Demonstration
+            </Link>
           </div>
-          <Link
-            to="/module3"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
-          ></Link>
         </section>
 
         {/* Future modules can go here */}
