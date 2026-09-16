@@ -18,8 +18,8 @@ const Home: React.FC = () => {
                 A demonstration of finding real-world dimensions using perspective projection equations and camera calibration.
               </p>
             </div>
-            <Link 
-              to="/module2" 
+            <Link
+              to="/module2"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
             >
               View Demonstration
@@ -27,10 +27,23 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 3: Image Blurring</h3>
+            <p className="text-gray-400">
+              A demonstration of image blurring using a filtering approach.
+            </p>
+          </div>
+          <Link
+            to="/module3"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
+          ></Link>
+        </section>
+
         {/* Future modules can go here */}
         <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 3: Coming Soon</h3>
+            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 4: Coming Soon</h3>
             <p className="text-gray-400">Future assignments will be listed here.</p>
           </div>
         </section>
