@@ -36,10 +36,14 @@ fft_result = fft_image * fft_kernel
 # The result is complex numbers, so we take the real part
 frequency_result = np.real(np.fft.ifft2(fft_result))
 
+
 # --- EVIDENCE / VALIDATION ---
-# Calculate the absolute difference between Method A and Method B
-# We round the values to account for minuscule floating-point arithmetic errors
-difference = np.abs(spatial_result - frequency_result)
+# Calculate difference, but ignore the outer 'kernel_size' border pixels
+margin = kernel_size
+valid_spatial = spatial_result[margin:-margin, margin:-margin]
+valid_frequency = frequency_result[margin:-margin, margin:-margin]
+
+difference = np.abs(valid_spatial - valid_frequency)
 max_error = np.max(difference)
 
 print(f"Maximum difference between spatial and frequency methods: {max_error:.4f}")

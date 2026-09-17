@@ -10,7 +10,7 @@ const Module2App: React.FC = () => {
         </Link>
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-2">CSC 8830: Computer Vision</h1>
-          <h2 className="text-2xl text-gray-600">Module 2 Assignment Demonstration</h2>
+          <h2 className="text-2xl text-gray-600">Module 2: Camera Calibration & Dimensions Assignment Demonstration</h2>
         </div>
       </header>
 
@@ -32,8 +32,8 @@ const Module2App: React.FC = () => {
         <section style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', marginBottom: '32px' }}>
           <h3 style={{ fontSize: '24px', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '16px', marginTop: '0' }}>Working Demonstration</h3>
           <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
-            <iframe 
-              src="https://www.youtube.com/embed/fcLAOd-B5mQ" 
+            <iframe
+              src="https://www.youtube.com/embed/fcLAOd-B5mQ"
               title="Module 2 Demonstration"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
