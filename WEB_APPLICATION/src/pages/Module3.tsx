@@ -34,8 +34,15 @@ const Module3App: React.FC = () => {
           <p style={{ marginBottom: '24px', color: '#4b5563', lineHeight: '1.5' }}>
             Demonstration of image blurring (Custom Box Filter vs Built-in Gaussian Blur and Convolution in Frequency Domain).
           </p>
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p className="text-gray-400 absolute" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>Video demonstration coming soon</p>
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+            <iframe
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              src="https://www.youtube.com/embed/wnJnAsUP2sM"
+              title="Module 3 Demo Video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
           </div>
         </section>
 
