@@ -1,3 +1,13 @@
+"""
+README
+======
+This script demonstrates and compares spatial domain filtering with frequency domain filtering.
+It applies a 5x5 Box Blur using both methods:
+1. Spatial Domain: Using OpenCV's filter2D.
+2. Frequency Domain: Using Fast Fourier Transform (FFT) to convert both the image and the kernel,
+   multiplying them, and using Inverse FFT to convert back to the spatial domain.
+The maximum difference between the two methods is calculated to validate the convolution theorem.
+"""
 import cv2
 import numpy as np
 

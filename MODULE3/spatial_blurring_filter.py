@@ -1,3 +1,10 @@
+"""
+README
+======
+This script demonstrates spatial blurring techniques on an image.
+It compares a custom Box filter (using a 5x5 normalized matrix) with OpenCV's built-in Gaussian Blur.
+The results are displayed side-by-side for comparison.
+"""
 import cv2
 import numpy as np
 
