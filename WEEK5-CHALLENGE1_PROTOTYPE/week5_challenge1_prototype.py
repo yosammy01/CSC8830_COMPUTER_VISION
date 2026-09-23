@@ -43,7 +43,7 @@ def edge_slowfast_processor(video_path):
     # ---------------------------------------------------------
     # Feasibility test: Simulating the send to Video-LLM
     # ---------------------------------------------------------
-    print("Mock Transmition of optimized payload to Cloud Video-LLM...")
+    print("Mock Transmission of optimized payload to Cloud Video-LLM...")
     
     # Simulated API payload targeting a multimodal tool
     llm_payload = {
@@ -55,7 +55,7 @@ def edge_slowfast_processor(video_path):
         }
     }
     
-    print(f"Mock API Call Successful. Vision-LLM processed the event using {bandwidth_saved:.2f}% less network data.")
+    print(f"Mock API Call Successful. Mock Vision-LLM processed the event using {bandwidth_saved:.2f}% less network data.")
 
 import glob
 
