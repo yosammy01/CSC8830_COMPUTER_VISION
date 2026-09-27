@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Module2 from './pages/Module2';
 import Module3 from './pages/Module3';
+import Module4 from './pages/Module4';
 
 const App: React.FC = () => {
   return (
@@ -11,6 +12,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/module2" element={<Module2 />} />
         <Route path="/module3" element={<Module3 />} />
+        <Route path="/module4" element={<Module4 />} />
       </Routes>
     </Router>
   );

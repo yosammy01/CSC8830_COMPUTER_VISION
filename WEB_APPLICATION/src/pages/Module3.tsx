@@ -24,7 +24,7 @@ const Module3App: React.FC = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
             <a href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE3" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#1f2937', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>GitHub Repo</a>
-            <a href={`${import.meta.env.BASE_URL}Module3_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Final PDF</a>
+            <a href={`${import.meta.env.BASE_URL}Module3/Module3_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Final PDF</a>
           </div>
         </section>
 
@@ -54,9 +54,9 @@ const Module3App: React.FC = () => {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <img src={`${import.meta.env.BASE_URL}Module3_Theory_Math.png`} alt="Theory and Math" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
-            <img src={`${import.meta.env.BASE_URL}Module3_Implementation_Results.png`} alt="Implementation Results" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
-            <img src={`${import.meta.env.BASE_URL}Module3_Evidence_Validation.png`} alt="Evidence and Validation" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}Module3/Module3_Theory_Math.png`} alt="Theory and Math" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}Module3/Module3_Implementation_Results.png`} alt="Implementation Results" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+            <img src={`${import.meta.env.BASE_URL}Module3/Module3_Evidence_Validation.png`} alt="Evidence and Validation" style={{ width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
           </div>
         </section>
 

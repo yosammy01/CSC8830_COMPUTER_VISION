@@ -44,10 +44,27 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        <section className="bg-white p-8 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h3 className="text-2xl font-semibold mb-2 text-gray-800">Module 4: Human Segmentation</h3>
+              <p className="text-gray-600">
+                A demonstration of human segmentation using classical computer vision techniques on RGB and Thermal images compared against SAM 2.
+              </p>
+            </div>
+            <Link
+              to="/module4"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
+            >
+              View Demonstration
+            </Link>
+          </div>
+        </section>
+
         {/* Future modules can go here */}
         <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 4: Coming Soon</h3>
+            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 5: Coming Soon</h3>
             <p className="text-gray-400">Future assignments will be listed here.</p>
           </div>
         </section>
