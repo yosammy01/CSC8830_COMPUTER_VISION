@@ -10,7 +10,7 @@ const Module2App: React.FC = () => {
         </Link>
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-2">CSC 8830: Computer Vision</h1>
-          <h2 className="text-2xl text-gray-600">Module 2: Camera Calibration & Dimensions Assignment Demonstration</h2>
+          <h2 className="text-2xl text-gray-600">Module 2: Camera Calibration & Dimensions Demonstration</h2>
         </div>
       </header>
 
