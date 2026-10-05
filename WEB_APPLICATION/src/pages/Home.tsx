@@ -64,7 +64,7 @@ const Home: React.FC = () => {
         {/* Future modules can go here */}
         <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 5: Coming Soon</h3>
+            <h3 className="text-xl font-semibold mb-2 text-gray-500">Module 5-6: Coming Soon</h3>
             <p className="text-gray-400">Future assignments will be listed here.</p>
           </div>
         </section>
