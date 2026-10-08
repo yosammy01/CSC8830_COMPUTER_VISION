@@ -23,6 +23,7 @@ const Module56App: React.FC = () => {
             <p className="text-sm text-gray-500">Access the code repository for Module 5/6.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+            <Link to="/module56/live" style={{ display: 'block', backgroundColor: '#10b981', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>Try Live Interactive Demo</Link>
             <a href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE56" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#1f2937', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>GitHub Repo</a>
             <a href={`${import.meta.env.BASE_URL}Module56/Module5-6_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Report PDF</a>
           </div>

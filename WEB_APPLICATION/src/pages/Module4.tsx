@@ -16,16 +16,16 @@ const Module4App: React.FC = () => {
 
       <main className="max-w-4xl mx-auto space-y-8">
 
-        {/* Links & Repository */}
         <section className="bg-white p-6 rounded-lg shadow-md flex justify-between items-center">
           <div>
             <h3 className="text-xl font-semibold mb-1">Project Resources</h3>
             <p className="text-sm text-gray-500">Access the code repository, report, and theory PDF.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+            <Link to="/module4/live" style={{ display: 'block', backgroundColor: '#10b981', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>Try Live Interactive Demo</Link>
             <a href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE4" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#1f2937', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>GitHub Repo</a>
             <a href={`${import.meta.env.BASE_URL}Module4/Module4_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Report PDF</a>
-            <a href={`${import.meta.env.BASE_URL}Module4/Module4_Theory.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#10b981', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Theory PDF</a>
+            <a href={`${import.meta.env.BASE_URL}Module4/Module4_Theory.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#8b5cf6', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Theory PDF</a>
           </div>
         </section>
 
