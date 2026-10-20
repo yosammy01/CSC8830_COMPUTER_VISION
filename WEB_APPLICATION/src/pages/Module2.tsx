@@ -1,7 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import calibrationOutputTxt from '../../../MODULE2/calibration_output.txt?raw';
+import dimensionsOutputTxt from '../../../MODULE2/dimensions_output.txt?raw';
+
+const calibrationGlob = import.meta.glob('../../../MODULE2/images/*.jpg', { as: 'url', eager: true });
+const measurementsGlob = import.meta.glob('../../../MODULE2/measurements/*.jpg', { as: 'url', eager: true });
 
 const Module2App: React.FC = () => {
+  const calibrationImages = Object.entries(calibrationGlob).map(([path, url]) => ({
+    name: path.split('/').pop() || 'Calibration Image',
+    url: url as string,
+  }));
+
+  const measurementImages = Object.entries(measurementsGlob).map(([path, url]) => ({
+    name: path.split('/').pop() || 'Measurement Image',
+    url: url as string,
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-8 font-sans">
       <header className="max-w-4xl mx-auto mb-10 relative">
@@ -44,7 +59,50 @@ const Module2App: React.FC = () => {
           </div>
         </section>
 
-        {/* Validation Data */}
+        {/* Step 1: Calibration Images */}
+        <section style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '24px', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '16px', marginTop: '0' }}>Step 1: Camera Calibration Dataset</h3>
+          <p style={{ marginBottom: '24px', color: '#4b5563', lineHeight: '1.5' }}>
+            Below are the {calibrationImages.length} checkerboard calibration images (captured by a smartphone) used to find chessboard corners and compute the intrinsic camera matrix and distortion coefficients.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+            {calibrationImages.map((img, idx) => (
+              <div key={idx} style={{ backgroundColor: '#f9fafb', padding: '6px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px' }}>
+                <img src={img.url} alt={img.name} style={{ height: '80px', width: '100%', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db', marginBottom: '4px' }} />
+                <span style={{ fontSize: '10px', color: '#4b5563', width: '100%', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={img.name}>{img.name}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Calibration Terminal Output</h4>
+            <pre style={{ backgroundColor: '#111827', color: '#60a5fa', padding: '16px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', maxHeight: '260px', overflowY: 'auto', textAlign: 'left', margin: 0 }}>
+              {calibrationOutputTxt}
+            </pre>
+          </div>
+        </section>
+
+        {/* Step 2: Measurement Images */}
+        <section style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '24px', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '16px', marginTop: '0' }}>Step 2: Object Measurement Dataset</h3>
+          <p style={{ marginBottom: '24px', color: '#4b5563', lineHeight: '1.5' }}>
+            Below are the {measurementImages.length} object measurement images processed with the calibration parameters to undistort the images, isolate the objects, and compute their real-world 2D dimensions.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+            {measurementImages.map((img, idx) => (
+              <div key={idx} style={{ backgroundColor: '#f9fafb', padding: '6px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px' }}>
+                <img src={img.url} alt={img.name} style={{ height: '80px', width: '100%', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db', marginBottom: '4px' }} />
+                <span style={{ fontSize: '10px', color: '#4b5563', width: '100%', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={img.name}>{img.name}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Measurement Terminal Output</h4>
+            <pre style={{ backgroundColor: '#111827', color: '#4ade80', padding: '16px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', maxHeight: '320px', overflowY: 'auto', textAlign: 'left', margin: 0 }}>
+              {dimensionsOutputTxt}
+            </pre>
+          </div>
+        </section>
+
         {/* Validation Data */}
         <section style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
           <h3 style={{ fontSize: '24px', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '16px', marginTop: '0' }}>Step 3: Validation & Error Statistics</h3>

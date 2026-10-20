@@ -17,23 +17,23 @@ interface OutputImage {
   url: string;
 }
 
-// Import all images from MODULE2/measurements and MODULE2/images
-const measurementsGlob = import.meta.glob('../../../MODULE2/measurements/*.jpg', { as: 'url', eager: true });
-const calibrationGlob = import.meta.glob('../../../MODULE2/images/*.jpg', { as: 'url', eager: true });
-
 const Module2Live: React.FC = () => {
   const [pyodide, setPyodide] = useState<any>(null);
   const [loadingMsg, setLoadingMsg] = useState<string>("Loading Python environment (this may take a minute)...");
   
-  const [outputImages, setOutputImages] = useState<OutputImage[]>([]);
-  const [measurementLog, setMeasurementLog] = useState<string>("");
-  const [isProcessingMeasurements, setIsProcessingMeasurements] = useState<boolean>(false);
-  
+  // Step 1: Calibration State
+  const [calibrationFiles, setCalibrationFiles] = useState<File[]>([]);
+  const [calibrationPreviewUrls, setCalibrationPreviewUrls] = useState<string[]>([]);
   const [calibrationLog, setCalibrationLog] = useState<string>("");
   const [isProcessingCalibration, setIsProcessingCalibration] = useState<boolean>(false);
   const [calibrationParamsDisplay, setCalibrationParamsDisplay] = useState<string>("");
 
-  const calibrationImagesUrls = Object.values(calibrationGlob) as string[];
+  // Step 2: Measurement State
+  const [measurementFiles, setMeasurementFiles] = useState<File[]>([]);
+  const [measurementPreviewUrls, setMeasurementPreviewUrls] = useState<string[]>([]);
+  const [outputImages, setOutputImages] = useState<OutputImage[]>([]);
+  const [measurementLog, setMeasurementLog] = useState<string>("");
+  const [isProcessingMeasurements, setIsProcessingMeasurements] = useState<boolean>(false);
 
   useEffect(() => {
     const loadScript = () => {
@@ -55,34 +55,12 @@ const Module2Live: React.FC = () => {
         setLoadingMsg("Installing OpenCV, NumPy, and Pillow into browser...");
         await py.loadPackage(['numpy', 'opencv-python', 'Pillow']);
         
-        setLoadingMsg("Loading image datasets into virtual filesystem...");
-        
         // Setup initial file system structure needed by the script
         py.FS.mkdir('/measurements');
         py.FS.mkdir('/images');
         
         // Write default params just in case they don't run calibration first
         py.FS.writeFile('/calibration_params.json', initialCalibrationParamsJson);
-        
-        // Load measurement images
-        for (const [path, url] of Object.entries(measurementsGlob)) {
-          const filename = path.split('/').pop();
-          if (filename && typeof url === 'string') {
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            py.FS.writeFile('/measurements/' + filename, new Uint8Array(arrayBuffer));
-          }
-        }
-        
-        // Load calibration images
-        for (const [path, url] of Object.entries(calibrationGlob)) {
-          const filename = path.split('/').pop();
-          if (filename && typeof url === 'string') {
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            py.FS.writeFile('/images/' + filename, new Uint8Array(arrayBuffer));
-          }
-        }
         
         setPyodide(py);
         setLoadingMsg("");
@@ -94,13 +72,51 @@ const Module2Live: React.FC = () => {
     initPyodide();
   }, []);
 
+  const handleCalibrationUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      setCalibrationFiles(files);
+      setCalibrationPreviewUrls(files.map(f => URL.createObjectURL(f)));
+      setCalibrationLog("");
+      setCalibrationParamsDisplay("");
+    }
+  };
+
+  const handleMeasurementUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      setMeasurementFiles(files);
+      setMeasurementPreviewUrls(files.map(f => URL.createObjectURL(f)));
+      setOutputImages([]);
+      setMeasurementLog("");
+    }
+  };
+
   const runCalibration = async () => {
-    if (!pyodide) return;
+    if (!pyodide || calibrationFiles.length === 0) return;
     setIsProcessingCalibration(true);
     setCalibrationLog("");
 
     try {
       try { pyodide.FS.unlink('/calibration_output.txt'); } catch(e) {}
+
+      // Clear existing calibration images in virtual FS
+      try {
+        const existing = pyodide.FS.readdir('/images');
+        for (const file of existing) {
+          if (file !== '.' && file !== '..') {
+            pyodide.FS.unlink('/images/' + file);
+          }
+        }
+      } catch (e) {}
+
+      // Write uploaded calibration files to /images/*.jpg
+      for (let i = 0; i < calibrationFiles.length; i++) {
+        const file = calibrationFiles[i];
+        const arrayBuffer = await file.arrayBuffer();
+        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        pyodide.FS.writeFile(`/images/${baseName || `cal_${i}`}.jpg`, new Uint8Array(arrayBuffer));
+      }
       
       const monkeyPatch = `
 import cv2
@@ -110,6 +126,7 @@ import os
 import sys
 
 os.chdir('/')
+sys.stdout = sys.__stdout__
 
 # Hijack imread
 _original_imread = cv2.imread
@@ -131,11 +148,11 @@ cv2.namedWindow = lambda *args, **kwargs: None
 cv2.resizeWindow = lambda *args, **kwargs: None
 `;
 
-      await pyodide.runPythonAsync(monkeyPatch + '\n' + calibrationScriptRaw);
+      await pyodide.runPythonAsync(monkeyPatch + '\n' + calibrationScriptRaw + '\nsys.stdout.flush()\n');
 
       try {
         const textLog = pyodide.FS.readFile('/calibration_output.txt', { encoding: 'utf8' });
-        setCalibrationLog(textLog);
+        setCalibrationLog(textLog || "No calibration output generated.");
       } catch (e) {
         setCalibrationLog("No calibration output found.");
       }
@@ -154,13 +171,31 @@ cv2.resizeWindow = lambda *args, **kwargs: None
   };
 
   const runMeasurements = async () => {
-    if (!pyodide) return;
+    if (!pyodide || measurementFiles.length === 0) return;
     setIsProcessingMeasurements(true);
     setOutputImages([]);
     setMeasurementLog("");
 
     try {
       try { pyodide.FS.unlink('/dimensions_output.txt'); } catch(e) {}
+
+      // Clear existing measurement images in virtual FS
+      try {
+        const existing = pyodide.FS.readdir('/measurements');
+        for (const file of existing) {
+          if (file !== '.' && file !== '..') {
+            pyodide.FS.unlink('/measurements/' + file);
+          }
+        }
+      } catch (e) {}
+
+      // Write uploaded measurement files to /measurements/*.jpg
+      for (let i = 0; i < measurementFiles.length; i++) {
+        const file = measurementFiles[i];
+        const arrayBuffer = await file.arrayBuffer();
+        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        pyodide.FS.writeFile(`/measurements/${baseName || `meas_${i}`}.jpg`, new Uint8Array(arrayBuffer));
+      }
 
       const monkeyPatch = `
 import cv2
@@ -170,6 +205,7 @@ import os
 import sys
 
 os.chdir('/')
+sys.stdout = sys.__stdout__
 
 _last_imread_path = None
 _original_imread = cv2.imread
@@ -210,7 +246,7 @@ cv2.namedWindow = lambda *args, **kwargs: None
 cv2.resizeWindow = lambda *args, **kwargs: None
 `;
 
-      await pyodide.runPythonAsync(monkeyPatch + '\n' + dimensionsScript);
+      await pyodide.runPythonAsync(monkeyPatch + '\n' + dimensionsScript + '\nsys.stdout.flush()\n');
 
       const outputMeta = pyodide.runPython('_output_titles').toJs();
       const newOutputs: OutputImage[] = [];
@@ -232,7 +268,7 @@ cv2.resizeWindow = lambda *args, **kwargs: None
 
       try {
         const textLog = pyodide.FS.readFile('/dimensions_output.txt', { encoding: 'utf8' });
-        setMeasurementLog(textLog);
+        setMeasurementLog(textLog || "No dimensions output generated.");
       } catch (e) {
         setMeasurementLog("No dimensions output found.");
       }
@@ -270,40 +306,47 @@ cv2.resizeWindow = lambda *args, **kwargs: None
               <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
                 <h3 className="text-2xl font-bold mb-4">Step 1: Camera Calibration</h3>
                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6 text-sm text-blue-800">
-                  <p><strong>Pre-loaded Data:</strong> We have automatically loaded 14 checkerboard calibration images (captured by a smartphone) into the virtual filesystem.</p>
-                  
-                  <div className="flex flex-wrap gap-2 mt-4 mb-4 justify-center">
-                    {calibrationImagesUrls.map((url, idx) => (
-                      <img key={idx} src={url} alt={`Calibration ${idx}`} className="rounded border border-blue-300 shadow-sm" style={{ height: '64px', width: 'auto', objectFit: 'cover' }} />
-                    ))}
-                  </div>
-
-                  <p className="mt-2">Run the calibration script to analyze these images, find the chessboard corners, and compute the intrinsic camera matrix and distortion coefficients.</p>
+                  <p>Upload checkerboard calibration images to analyze, find the chessboard corners, and compute the intrinsic camera matrix and distortion coefficients.</p>
                 </div>
 
-                <div className="text-center mb-6">
-                  <button 
-                    onClick={runCalibration} 
-                    disabled={isProcessingCalibration}
-                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-medium text-lg shadow disabled:bg-gray-400"
-                  >
-                    {isProcessingCalibration ? "Processing 14 Images..." : "Run calibration_code.py"}
-                  </button>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-6 bg-white">
+                  <input type="file" accept="image/*" multiple onChange={handleCalibrationUpload} className="mb-4" />
+                  <p className="text-gray-500 text-sm">Upload checkerboard calibration image(s) to process</p>
                 </div>
+
+                {calibrationPreviewUrls.length > 0 && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '24px' }}>
+                      {calibrationPreviewUrls.map((url, idx) => (
+                        <img key={idx} src={url} alt={`Calibration ${idx}`} className="rounded border border-blue-300 shadow-sm" style={{ height: '64px', width: 'auto', objectFit: 'cover', borderRadius: '4px' }} />
+                      ))}
+                    </div>
+
+                    <div className="text-center mb-6">
+                      <button 
+                        onClick={runCalibration} 
+                        disabled={isProcessingCalibration}
+                        className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-medium text-lg shadow disabled:bg-gray-400"
+                      >
+                        {isProcessingCalibration ? `Processing ${calibrationFiles.length} Image(s)...` : "Run calibration_code.py"}
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 {calibrationLog && (
-                  <div className="mt-4">
-                    <h4 className="font-bold mb-2">Calibration Terminal Output</h4>
-                    <pre className="bg-gray-900 text-blue-400 p-4 rounded-lg overflow-x-auto text-sm max-h-60 overflow-y-auto">
+                  <div className="mt-4" style={{ marginTop: '16px' }}>
+                    <h4 className="font-bold mb-2" style={{ fontWeight: 'bold', marginBottom: '8px' }}>Calibration Terminal Output</h4>
+                    <pre className="bg-gray-900 text-blue-400 p-4 rounded-lg overflow-x-auto text-sm max-h-60 overflow-y-auto" style={{ backgroundColor: '#111827', color: '#60a5fa', padding: '16px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', maxHeight: '260px', overflowY: 'auto', textAlign: 'left' }}>
                       {calibrationLog}
                     </pre>
                   </div>
                 )}
                 
                 {calibrationParamsDisplay && (
-                  <div className="mt-4">
-                    <h4 className="font-bold mb-2">Generated calibration_params.json</h4>
-                    <pre className="bg-white border border-gray-300 p-4 rounded-lg text-xs overflow-x-auto max-h-60 overflow-y-auto">
+                  <div className="mt-4" style={{ marginTop: '16px' }}>
+                    <h4 className="font-bold mb-2" style={{ fontWeight: 'bold', marginBottom: '8px' }}>Generated calibration_params.json</h4>
+                    <pre className="bg-white border border-gray-300 p-4 rounded-lg text-xs overflow-x-auto max-h-60 overflow-y-auto" style={{ backgroundColor: '#ffffff', color: '#1f2937', border: '1px solid #d1d5db', padding: '16px', borderRadius: '8px', overflowX: 'auto', fontSize: '12px', maxHeight: '240px', overflowY: 'auto', textAlign: 'left' }}>
                       {calibrationParamsDisplay}
                     </pre>
                   </div>
@@ -314,24 +357,38 @@ cv2.resizeWindow = lambda *args, **kwargs: None
               <div className="border border-gray-200 rounded-xl p-6 bg-gray-50">
                 <h3 className="text-2xl font-bold mb-4">Step 2: Object Measurement</h3>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-6 text-sm text-green-800">
-                  <p><strong>Pre-loaded Data:</strong> We have loaded 20 pre-captured measurement images.</p>
-                  <p className="mt-2">This script will read the <code>calibration_params.json</code> generated above, undistort the images, isolate the objects, and compute their real-world dimensions using perspective projection.</p>
+                  <p>Upload object measurement images. This script will read <code>calibration_params.json</code> (generated in Step 1, or default parameters if Step 1 has not been run), undistort the images, isolate the objects, and compute their real-world dimensions using perspective projection.</p>
                 </div>
 
-                <div className="text-center mb-6">
-                  <button 
-                    onClick={runMeasurements} 
-                    disabled={isProcessingMeasurements}
-                    className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition font-medium text-lg shadow disabled:bg-gray-400"
-                  >
-                    {isProcessingMeasurements ? "Processing 20 Images..." : "Run get_real_world_2d_dimensions_code.py"}
-                  </button>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-6 bg-white">
+                  <input type="file" accept="image/*" multiple onChange={handleMeasurementUpload} className="mb-4" />
+                  <p className="text-gray-500 text-sm">Upload object measurement image(s) to process</p>
                 </div>
+
+                {measurementPreviewUrls.length > 0 && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '24px' }}>
+                      {measurementPreviewUrls.map((url, idx) => (
+                        <img key={idx} src={url} alt={`Measurement ${idx}`} className="rounded border border-green-300 shadow-sm" style={{ height: '64px', width: 'auto', objectFit: 'cover', borderRadius: '4px' }} />
+                      ))}
+                    </div>
+
+                    <div className="text-center mb-6">
+                      <button 
+                        onClick={runMeasurements} 
+                        disabled={isProcessingMeasurements}
+                        className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition font-medium text-lg shadow disabled:bg-gray-400"
+                      >
+                        {isProcessingMeasurements ? `Processing ${measurementFiles.length} Image(s)...` : "Run get_real_world_2d_dimensions_code.py"}
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 {measurementLog && (
-                  <div className="mt-4">
-                    <h4 className="font-bold mb-2">Measurement Terminal Output</h4>
-                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-60 overflow-y-auto">
+                  <div className="mt-4" style={{ marginTop: '16px' }}>
+                    <h4 className="font-bold mb-2" style={{ fontWeight: 'bold', marginBottom: '8px' }}>Measurement Terminal Output</h4>
+                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-60 overflow-y-auto" style={{ backgroundColor: '#111827', color: '#4ade80', padding: '16px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', maxHeight: '300px', overflowY: 'auto', textAlign: 'left' }}>
                       {measurementLog}
                     </pre>
                   </div>
@@ -340,11 +397,11 @@ cv2.resizeWindow = lambda *args, **kwargs: None
                 {outputImages.length > 0 && (
                   <div className="mt-8 border-t pt-8">
                     <h4 className="text-xl font-bold mb-4 text-center">Script Output ({outputImages.length} images processed)</h4>
-                    <div className="flex flex-col gap-8 w-full">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
                       {outputImages.map((img, idx) => (
-                        <div key={idx} className="bg-white p-4 rounded-lg shadow border border-gray-200 w-full overflow-hidden flex flex-col items-center">
-                          <h5 className="text-xl font-bold text-center mb-4 text-gray-700">{img.title}</h5>
-                          <img src={img.url} alt={img.title} className="rounded" style={{ width: '100%', maxWidth: '100%', height: 'auto', display: 'block' }} />
+                        <div key={idx} style={{ backgroundColor: 'white', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <h5 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', color: '#374151', marginTop: 0 }}>{img.title}</h5>
+                          <img src={img.url} alt={img.title} style={{ maxHeight: '280px', width: 'auto', maxWidth: '100%', objectFit: 'contain', borderRadius: '4px', display: 'block' }} />
                         </div>
                       ))}
                     </div>
