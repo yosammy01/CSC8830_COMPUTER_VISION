@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom';
 import calibrationOutputTxt from '../../../MODULE2/calibration_output.txt?raw';
 import dimensionsOutputTxt from '../../../MODULE2/dimensions_output.txt?raw';
 
-const calibrationGlob = import.meta.glob('../../../MODULE2/images/*.jpg', { as: 'url', eager: true });
-const measurementsGlob = import.meta.glob('../../../MODULE2/measurements/*.jpg', { as: 'url', eager: true });
+const calibrationGlob = import.meta.glob('../../../MODULE2/images/*.jpg', { query: '?url', import: 'default', eager: true });
+const measurementsGlob = import.meta.glob('../../../MODULE2/measurements/*.jpg', { query: '?url', import: 'default', eager: true });
 
 const Module2App: React.FC = () => {
-  const calibrationImages = Object.entries(calibrationGlob).map(([path, url]) => ({
+  const calibrationImages = Object.entries(calibrationGlob).map(([path, mod]) => ({
     name: path.split('/').pop() || 'Calibration Image',
-    url: url as string,
+    url: typeof mod === 'string' ? mod : (mod as any)?.default || '',
   }));
 
-  const measurementImages = Object.entries(measurementsGlob).map(([path, url]) => ({
+  const measurementImages = Object.entries(measurementsGlob).map(([path, mod]) => ({
     name: path.split('/').pop() || 'Measurement Image',
-    url: url as string,
+    url: typeof mod === 'string' ? mod : (mod as any)?.default || '',
   }));
 
   return (
