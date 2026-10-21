@@ -123,16 +123,26 @@ def get_sorted_images(folder):
     )
 
 
+def extract_object_key(filepath):
+    """
+    Extracts the base object name from filenames like 'OBJECT_NAME_LEFT.jpg'
+    or 'OBJECT_NAME_RIGHT.jpg' (case-insensitive).
+    """
+    stem = os.path.splitext(os.path.basename(filepath))[0]
+    cleaned = re.sub(r"[_\-\s]*(left|right)$", "", stem, flags=re.IGNORECASE)
+    return cleaned.strip().lower()
+
+
 def match_stereo_pairs(left_files, right_files):
-    # 1. Try exact basename match first (e.g. 'book.jpg' in both folders)
-    right_by_name = {os.path.basename(p).lower(): p for p in right_files}
-    exact_matches = []
+    # 1. Match by OBJECT_NAME (stripping '_LEFT' and '_RIGHT' suffixes, or exact basename match)
+    right_by_key = {extract_object_key(p): p for p in right_files}
+    key_matches = []
     for lp in left_files:
-        lname = os.path.basename(lp).lower()
-        if lname in right_by_name:
-            exact_matches.append((lp, right_by_name[lname]))
-    if len(exact_matches) == len(left_files) and len(exact_matches) > 0:
-        return exact_matches
+        lkey = extract_object_key(lp)
+        if lkey in right_by_key:
+            key_matches.append((lp, right_by_key[lkey]))
+    if len(key_matches) > 0:
+        return key_matches
 
     # 2. Try matching by numeric ID (e.g. 'LEFT1.jpg' and 'RIGHT1.jpg')
     left_by_id = {extract_number(p): p for p in left_files if extract_number(p) != -1}
@@ -146,40 +156,68 @@ def match_stereo_pairs(left_files, right_files):
     return list(zip(left_files[:n], right_files[:n]))
 
 
-def detect_object_contour(undistorted_bgr):
+def refine_boundaries(img, bx, by, bw, bh):
     """
-    Segments the primary foreground object contour using adaptive thresholding + morphology
-    (matching Module 2), with an automatic Otsu fallback if no central contour is found.
+    Snaps the candidate bounding box to the true physical edges of the object using
+    edge gradient profiling (Sobel) to eliminate soft shadows cast onto the door/wall
+    on the left and contact shadows on the floor at the bottom.
+    """
+    h, w = img.shape[:2]
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    sobel_x = np.abs(cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=3))
+    sobel_y = np.abs(cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=3))
+
+    mid_y1, mid_y2 = int(by + 0.3 * bh), int(by + 0.7 * bh)
+    search_left_start = max(0, bx - 15)
+    search_left_end = min(w - 1, bx + int(0.35 * bw))
+    mean_grad_x = np.mean(sobel_x[mid_y1:mid_y2, search_left_start:search_left_end], axis=0)
+    true_left = search_left_start + int(np.argmax(mean_grad_x))
+
+    search_right_start = bx + int(0.65 * bw)
+    search_right_end = min(w - 1, bx + bw + 25)
+    mean_grad_x_r = np.mean(sobel_x[mid_y1:mid_y2, search_right_start:search_right_end], axis=0)
+    true_right = search_right_start + int(np.argmax(mean_grad_x_r))
+
+    mid_x1 = int(true_left + 0.25 * (true_right - true_left))
+    mid_x2 = int(true_left + 0.75 * (true_right - true_left))
+
+    search_top_start = max(0, by - 30)
+    search_top_end = min(h - 1, by + int(0.25 * bh))
+    mean_grad_y_top = np.mean(sobel_y[search_top_start:search_top_end, mid_x1:mid_x2], axis=1)
+    true_top = search_top_start + int(np.argmax(mean_grad_y_top))
+
+    search_bot_start = by + int(0.70 * bh)
+    search_bot_end = min(h - 1, by + bh + 40)
+    mean_grad_y_bot = np.mean(sobel_y[search_bot_start:search_bot_end, mid_x1:mid_x2], axis=1)
+    true_bot = search_bot_start + int(np.argmax(mean_grad_y_bot))
+
+    return true_left, true_top, max(20, true_right - true_left), max(20, true_bot - true_top)
+
+
+def detect_object_contour(undistorted_bgr, is_right=False):
+    """
+    Segments the primary foreground object contour as a solid shape.
+    Handles both tall objects placed against the white door (upper zone)
+    and low objects placed on the white sheet / floor (lower zone),
+    such as bricks, boxes, books, air purifiers, and catalog cases.
+    Trims soft wall shadows and floor contact shadows using Sobel gradient profiling.
     """
     h_img, w_img = undistorted_bgr.shape[:2]
     gray = cv2.cvtColor(undistorted_bgr, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-
-    thresh = cv2.adaptiveThreshold(
-        blurred, 255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY_INV,
-        151,
-        12
-    )
-    kernel = np.ones((5, 5), np.uint8)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    hsv = cv2.cvtColor(undistorted_bgr, cv2.COLOR_BGR2HSV)
 
     def pick_best_contour(contour_list, strict_bounds=True):
         best_c = None
         max_area = 0.0
         for c in contour_list:
             area = cv2.contourArea(c)
-            if area < 1500 or area > (0.85 * h_img * w_img):
+            if area < 5000 or area > (0.80 * h_img * w_img):
                 continue
             x, y, w, h = cv2.boundingRect(c)
             if strict_bounds:
-                if y < (h_img * 0.15) or (y + h) > (h_img * 0.92):
-                    continue
-                if x < (w_img * 0.10) or (x + w) > (w_img * 0.90):
+                if x <= 15 or y <= 15 or (x + w) >= (w_img - 15) or (y + h) >= (h_img - 15):
                     continue
             if w > (h * 5.0) or h > (w * 5.0):
                 continue
@@ -188,17 +226,129 @@ def detect_object_contour(undistorted_bgr):
                 best_c = c
         return best_c
 
-    target = pick_best_contour(contours, strict_bounds=True)
-    if target is None:
-        target = pick_best_contour(contours, strict_bounds=False)
+    is_white = (blurred >= 175) & (hsv[:, :, 1] <= 35)
 
-    # Fallback to Otsu thresholding if adaptive thresholding did not isolate the object
-    if target is None:
-        _, otsu_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        otsu_inv = cv2.morphologyEx(otsu_inv, cv2.MORPH_OPEN, kernel)
-        contours_otsu, _ = cv2.findContours(otsu_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        target = pick_best_contour(contours_otsu, strict_bounds=False)
+    # 1. First check upper zone (door) for tall/leaning objects
+    x1 = int(0.18 * w_img) if is_right else int(0.20 * w_img)
+    x2 = int(0.72 * w_img) if is_right else int(0.80 * w_img)
 
+    zone_upper = np.zeros((h_img, w_img), dtype=np.uint8)
+    zone_upper[650:1420, x1:x2] = (~is_white[650:1420, x1:x2]).astype(np.uint8) * 255
+    k_open = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
+    k_close = cv2.getStructuringElement(cv2.MORPH_RECT, (35, 35))
+    zu = cv2.morphologyEx(zone_upper, cv2.MORPH_OPEN, k_open)
+    zu = cv2.morphologyEx(zu, cv2.MORPH_CLOSE, k_close)
+    cnts_u, _ = cv2.findContours(zu, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    valid_u = []
+    for c in cnts_u:
+        area = cv2.contourArea(c)
+        if area > 10000:
+            cx, cy, cw, ch = cv2.boundingRect(c)
+            aspect = max(cw / max(ch, 1), ch / max(cw, 1))
+            if aspect < 4.5 and cw < 1500:
+                valid_u.append(c)
+
+    best_u = max(valid_u, key=cv2.contourArea) if valid_u else None
+
+    # 2. Check lower zone for floor/ground objects (e.g. brick, clock_radio on sheet/door base)
+    lx1 = int(0.20 * w_img) if is_right else int(0.30 * w_img)
+    lx2 = int(0.60 * w_img) if is_right else int(0.70 * w_img)
+    zone_lower = np.zeros((h_img, w_img), dtype=np.uint8)
+    zone_lower[1350:1750, lx1:lx2] = (~is_white[1350:1750, lx1:lx2]).astype(np.uint8) * 255
+    zl = cv2.morphologyEx(zone_lower, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15)))
+    zl = cv2.morphologyEx(zl, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25)))
+    cnts_l, _ = cv2.findContours(zl, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    valid_l = []
+    for c in cnts_l:
+        area = cv2.contourArea(c)
+        if area > 10000:
+            cx, cy, cw, ch = cv2.boundingRect(c)
+            aspect = max(cw / max(ch, 1), ch / max(cw, 1))
+            if aspect < 4.5 and cw >= 120 and cw < 1500:
+                valid_l.append(c)
+
+    best_l = max(valid_l, key=cv2.contourArea) if valid_l else None
+
+    # Decide whether upper or lower zone has the complete object
+    use_lower = False
+    if best_l is not None:
+        if best_u is None:
+            use_lower = True
+        else:
+            xu, yu, wu, hu = cv2.boundingRect(best_u)
+            xl, yl, wl, hl = cv2.boundingRect(best_l)
+            cx_u = xu + 0.5 * wu
+            cx_l = xl + 0.5 * wl
+            area_u = cv2.contourArea(best_u)
+            area_l = cv2.contourArea(best_l)
+            # If the lower candidate aligns with the upper candidate horizontally (|cx_u - cx_l| < 70)
+            # and the upper candidate was just a clipped top edge (yu + hu >= 1410 and hu < 150):
+            if abs(cx_u - cx_l) < 70 and (yu + hu >= 1410 and hu < 150) and (area_l > 1.5 * area_u and hl > hu):
+                use_lower = True
+
+    if use_lower:
+        if best_u is not None and abs(cx_u - cx_l) < 70 and (yl <= yu + hu + 30 and yu <= yl + hl):
+            # Upper and lower pieces are parts of the same object crossing the 1350-1420 zone boundary
+            bx = min(xu, xl)
+            by = min(yu, yl)
+            bw = max(xu + wu, xl + wl) - bx
+            bh = max(yu + hu, yl + hl) - by
+        else:
+            bx, by, bw, bh = cv2.boundingRect(best_l)
+        rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+        refined_box = np.array([
+            [[rx, ry]],
+            [[rx + rw, ry]],
+            [[rx + rw, ry + rh]],
+            [[rx, ry + rh]]
+        ], dtype=np.int32)
+        return refined_box, gray
+    elif best_u is not None:
+        bx, by, bw, bh = cv2.boundingRect(best_u)
+
+        # Trace bottom down to floor
+        box_bottom = by + bh
+        for y in range(max(1350, by + bh - 40), min(h_img - 50, 1800), 5):
+            strip = blurred[y, bx + int(0.20 * bw) : bx + int(0.80 * bw)]
+            if len(strip) > 0 and (np.mean(strip) < 40 or y >= 1720):
+                box_bottom = y
+                break
+
+        initial_h = max(bh, box_bottom - by)
+        rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, initial_h)
+        refined_box = np.array([
+            [[rx, ry]],
+            [[rx + rw, ry]],
+            [[rx + rw, ry + rh]],
+            [[rx, ry + rh]]
+        ], dtype=np.int32)
+        return refined_box, gray
+
+    # 3. Fallback to Otsu thresholding
+    _, otsu_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    k_open_fallback = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (35, 35))
+    k_close_fallback = cv2.getStructuringElement(cv2.MORPH_RECT, (45, 45))
+    otsu_inv = cv2.morphologyEx(otsu_inv, cv2.MORPH_OPEN, k_open_fallback)
+    otsu_inv = cv2.morphologyEx(otsu_inv, cv2.MORPH_CLOSE, k_close_fallback)
+    contours_otsu, _ = cv2.findContours(otsu_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    target = pick_best_contour(contours_otsu, strict_bounds=True)
+    if target is not None:
+        return target, gray
+
+    # 4. Fallback to adaptive thresholding (Module 2 style)
+    thresh_adapt = cv2.adaptiveThreshold(
+        blurred, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV,
+        151,
+        12
+    )
+    kernel_small = np.ones((5, 5), np.uint8)
+    thresh_adapt = cv2.morphologyEx(thresh_adapt, cv2.MORPH_OPEN, kernel_small)
+    contours_adapt, _ = cv2.findContours(thresh_adapt, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    target = pick_best_contour(contours_adapt, strict_bounds=False)
     return target, gray
 
 
@@ -211,18 +361,20 @@ def estimate_stereo_depth_z(undist_left, undist_right, contour_left, contour_rig
        cv2.triangulatePoints(P_left_unrect, P_right_unrect, pts_L, pts_R) and also computes
        rectified disparity depth Z = (f * baseline) / disparity.
     """
-    M_l = cv2.moments(contour_left)
-    cx_l = M_l["m10"] / M_l["m00"] if M_l["m00"] != 0 else float(np.mean(contour_left[:, 0, 0]))
-    cy_l = M_l["m01"] / M_l["m00"] if M_l["m00"] != 0 else float(np.mean(contour_left[:, 0, 1]))
+    xl, yl, wl, hl = cv2.boundingRect(contour_left)
+    cx_l = xl + 0.5 * wl
+    cy_l = yl + 0.5 * hl
 
     if contour_right is not None:
-        M_r = cv2.moments(contour_right)
-        cx_r = M_r["m10"] / M_r["m00"] if M_r["m00"] != 0 else float(np.mean(contour_right[:, 0, 0]))
-        cy_r = M_r["m01"] / M_r["m00"] if M_r["m00"] != 0 else float(np.mean(contour_right[:, 0, 1]))
+        xr, yr, wr, hr = cv2.boundingRect(contour_right)
+        cx_r = xr + 0.5 * wr
+        cy_r = yr + 0.5 * hr
     else:
         cx_r, cy_r = cx_l, cy_l
 
-    # Refine matched points using ORB features inside the object bounding boxes
+    centroid_disp = math.hypot(cx_l - cx_r, cy_l - cy_r)
+
+    # Start with bounding-box center correspondence (robust even on smooth/textureless objects)
     matched_pts_l = [[cx_l, cy_l]]
     matched_pts_r = [[cx_r, cy_r]]
 
@@ -246,10 +398,18 @@ def estimate_stereo_depth_z(undist_left, undist_right, contour_left, contour_rig
         bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
         matches = bf.match(des_l, des_r)
         matches = sorted(matches, key=lambda m: m.distance)
-        good_matches = matches[:max(5, int(len(matches) * 0.35))]
-        if len(good_matches) >= 3:
-            matched_pts_l = [list(kp_l[m.queryIdx].pt) for m in good_matches]
-            matched_pts_r = [list(kp_r[m.trainIdx].pt) for m in good_matches]
+        inlier_l, inlier_r = [], []
+        for m in matches:
+            pt_l = kp_l[m.queryIdx].pt
+            pt_r = kp_r[m.trainIdx].pt
+            disp = math.hypot(pt_l[0] - pt_r[0], pt_l[1] - pt_r[1])
+            # Only keep feature matches consistent with the object's overall stereo shift
+            if centroid_disp == 0 or abs(disp - centroid_disp) < 60.0:
+                inlier_l.append(list(pt_l))
+                inlier_r.append(list(pt_r))
+        if len(inlier_l) >= 3:
+            matched_pts_l.extend(inlier_l)
+            matched_pts_r.extend(inlier_r)
 
     pts_l_np = np.array(matched_pts_l, dtype=np.float64).T  # shape (2, N)
     pts_r_np = np.array(matched_pts_r, dtype=np.float64).T  # shape (2, N)
@@ -319,7 +479,7 @@ def classify_and_measure_contour(contour, z_mm, filename=""):
 
     lower_name = filename.lower()
     name_hints_circle = any(k in lower_name for k in ("circle", "round", "coin", "ball", "disc", "plate"))
-    name_hints_rect = any(k in lower_name for k in ("rect", "box", "book", "phone", "brick", "safe", "table", "sponge", "case", "radio", "remote"))
+    name_hints_rect = any(k in lower_name for k in ("rect", "box", "book", "phone", "brick", "safe", "table", "sponge", "case", "radio", "remote", "purifier", "cooker", "speaker"))
 
     # Classification logic
     if (circularity >= 0.80 and circle_fill_ratio >= 0.78 and rect_fill_ratio < 0.86) or (name_hints_circle and circularity >= 0.70):
@@ -337,17 +497,21 @@ def classify_and_measure_contour(contour, z_mm, filename=""):
     }
 
     if shape_type == "CIRCULAR":
-        # From an angled/above view, a flat circle projects as an ellipse whose major axis
-        # (horizontal diameter) is un-foreshortened, while 2 * radius_px of minEnclosingCircle
-        # captures the un-foreshortened major diameter.
+        # When contour is a 4-point bounding box, minEnclosingCircle computes the circumscribed circle
+        # (outer diagonal, ~41% too large). Instead, compute the true inscribed circle from the bounding rect:
+        rot_rect = cv2.minAreaRect(contour)
+        (rect_cx, rect_cy), (rect_w, rect_h), _ = rot_rect
+        box_pts = np.int32(np.round(cv2.boxPoints(rot_rect)))
+
         if len(contour) >= 5:
             _, (axis1, axis2), _ = cv2.fitEllipse(contour)
             diameter_px = float(max(axis1, axis2))
         else:
-            diameter_px = 2.0 * radius_px
+            diameter_px = float(0.5 * (rect_w + rect_h))
         diameter_mm = (diameter_px * z_mm) / fx
 
-        result["center_px"] = (int(round(circle_x)), int(round(circle_y)))
+        result["box_pts"] = box_pts
+        result["center_px"] = (int(round(rect_cx)), int(round(rect_cy)))
         result["radius_px"] = int(round(diameter_px / 2.0))
         result["diameter_px"] = diameter_px
         result["diameter_mm"] = diameter_mm
@@ -406,66 +570,19 @@ def classify_and_measure_contour(contour, z_mm, filename=""):
     return result
 
 
-# ==========================================
-# 3. Batch Process Stereo Object Pairs
-# ==========================================
-left_files = get_sorted_images(LEFT_MEAS_DIR)
-right_files = get_sorted_images(RIGHT_MEAS_DIR)
-stereo_pairs = match_stereo_pairs(left_files, right_files)
-
-print(f"Found {len(stereo_pairs)} stereo object pair(s) to process.\n")
-
-if len(stereo_pairs) == 0:
-    print("No stereo object image pairs found yet.")
-    print("Place Left object photos in:  MODULE7/stereo_measurements_left/")
-    print("Place Right object photos in: MODULE7/stereo_measurements_right/")
-    print("Then re-run: python stereo_object_dimensions.py")
-    sys.exit(0)
-
-for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
-    left_name = os.path.basename(left_path)
-    right_name = os.path.basename(right_path)
-
-    img_left = cv2.imread(left_path)
-    img_right = cv2.imread(right_path)
-
-    if img_left is None or img_right is None:
-        print(f"[Pair {idx}] Skipping ({left_name}, {right_name}) - Could not read image(s).\n")
-        continue
-
-    # Undistort both images using calibrated intrinsics
-    undist_left = cv2.undistort(img_left, K1, dist1, None, K1)
-    undist_right = cv2.undistort(img_right, K2, dist2, None, K2)
-
-    contour_left, _ = detect_object_contour(undist_left)
-    contour_right, _ = detect_object_contour(undist_right)
-
-    if contour_left is None:
-        print(f"[Pair {idx}] ({left_name}, {right_name}) - No valid object contour detected.\n")
-        continue
-
-    # Step 1: Estimate distance Z in 3D space using calibrated stereo
-    z_mm, xyz_3d, disparity_px, z_method = estimate_stereo_depth_z(
-        undist_left, undist_right, contour_left, contour_right
-    )
-
-    # Step 2: Classify shape and estimate real-world dimensions using estimated Z
-    measurement = classify_and_measure_contour(contour_left, z_mm, filename=left_name)
+def draw_measurement_overlay(img, measurement, z_mm, view_label="LEFT"):
+    """
+    Draws the detected shape contour/box/circle/polygon and real-world dimensions onto an image.
+    """
+    vis = img.copy()
     shape_type = measurement["shape_type"]
 
-    print(f"=== [Object {idx}] Left: '{left_name}' | Right: '{right_name}' ===")
-    print(f"    Depth Estimation Method: {z_method}")
-    print(f"    Stereo Disparity:        {disparity_px:.2f} px")
-    print(f"    3D Object Position:      X = {xyz_3d[0]:.2f} mm, Y = {xyz_3d[1]:.2f} mm, Z = {z_mm:.2f} mm ({z_mm / 10.0:.2f} cm)")
-    print(f"    Detected Shape Class:    {shape_type} (circularity={measurement['circularity']:.3f}, rect_fill={measurement['rect_fill_ratio']:.3f})")
-
-    vis = undist_left.copy()
     cv2.putText(
         vis,
-        f"Shape: {shape_type} | Stereo Z = {z_mm:.1f} mm ({z_mm/10.0:.1f} cm)",
+        f"[{view_label}] Shape: {shape_type} | Stereo Z = {z_mm:.1f} mm ({z_mm/10.0:.1f} cm)",
         (40, 80),
         cv2.FONT_HERSHEY_SIMPLEX,
-        1.8,
+        1.6,
         (0, 255, 255),
         4
     )
@@ -473,18 +590,23 @@ for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
     if shape_type == "CIRCULAR":
         cx, cy = measurement["center_px"]
         r_px = measurement["radius_px"]
-        diam_px = measurement["diameter_px"]
         diam_mm = measurement["diameter_mm"]
+        box_pts = measurement.get("box_pts")
 
-        print(f"    Pixel Diameter:          {diam_px:.1f} px")
-        print(f"    Real-World Diameter:     {diam_mm:.2f} mm ({diam_mm / 10.0:.2f} cm)\n")
+        # Draw square/rectangular bounding box
+        if box_pts is not None:
+            cv2.drawContours(vis, [box_pts], 0, (0, 255, 0), 8)
+        # Draw tight inscribed circle hugging true boundary
+        cv2.circle(vis, (cx, cy), r_px, (0, 255, 0), 6)
+        cv2.circle(vis, (cx, cy), 8, (0, 0, 255), -1)
+        cv2.line(vis, (cx - r_px, cy), (cx + r_px, cy), (255, 0, 0), 5)
 
-        cv2.circle(vis, (cx, cy), r_px, (0, 255, 0), 8)
-        cv2.line(vis, (cx - r_px, cy), (cx + r_px, cy), (255, 0, 0), 6)
+        top_y = int(np.min(box_pts[:, 1])) if box_pts is not None else max(140, cy - r_px - 20)
+        left_x = int(np.min(box_pts[:, 0])) if box_pts is not None else max(20, cx - r_px)
         cv2.putText(
             vis,
             f"Diameter: {diam_mm:.2f} mm",
-            (max(20, cx - r_px), max(140, cy - r_px - 20)),
+            (max(20, left_x), max(140, top_y - 20)),
             cv2.FONT_HERSHEY_SIMPLEX,
             1.6,
             (0, 255, 0),
@@ -493,13 +615,8 @@ for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
 
     elif shape_type == "RECTANGULAR":
         box_pts = measurement["box_pts"]
-        w_px = measurement["width_px"]
-        h_px = measurement["height_px"]
         w_mm = measurement["width_mm"]
         h_mm = measurement["height_mm"]
-
-        print(f"    Pixel Dimensions:        {w_px:.1f} px wide x {h_px:.1f} px long/high")
-        print(f"    Real-World Dimensions:   Width = {w_mm:.2f} mm ({w_mm / 10.0:.2f} cm), Length/Height = {h_mm:.2f} mm ({h_mm / 10.0:.2f} cm)\n")
 
         cv2.drawContours(vis, [box_pts], 0, (0, 255, 0), 8)
         top_y = int(np.min(box_pts[:, 1]))
@@ -517,11 +634,6 @@ for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
     else:
         edges = measurement["edges"]
         poly_pts = measurement["polygon_pts"]
-        print(f"    Polygon Edges Detected:  {len(edges)} edges")
-        for edge in edges:
-            print(f"      Edge {edge['edge_index']}: {edge['length_px']:.1f} px -> {edge['length_mm']:.2f} mm ({edge['length_mm'] / 10.0:.2f} cm)")
-        print()
-
         cv2.polylines(vis, [poly_pts], isClosed=True, color=(0, 255, 0), thickness=8)
         for edge in edges:
             mx, my = edge["midpoint"]
@@ -536,13 +648,107 @@ for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
                 3
             )
 
-    out_path = os.path.join(OUTPUT_DIR, f"stereo_measured_{left_name}")
-    cv2.imwrite(out_path, vis)
+    return vis
 
-    cv2.namedWindow("Calibrated Stereo Object Measurement", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Calibrated Stereo Object Measurement", 800, 600)
-    cv2.imshow("Calibrated Stereo Object Measurement", vis)
-    cv2.waitKey(0)
 
-cv2.destroyAllWindows()
+# ==========================================
+# 3. Batch Process Stereo Object Pairs
+# ==========================================
+def main():
+    left_files = get_sorted_images(LEFT_MEAS_DIR)
+    right_files = get_sorted_images(RIGHT_MEAS_DIR)
+    stereo_pairs = match_stereo_pairs(left_files, right_files)
+
+    print(f"Found {len(stereo_pairs)} stereo object pair(s) to process.\n")
+
+    if len(stereo_pairs) == 0:
+        print("No stereo object image pairs found yet.")
+        print("Place Left object photos in:  MODULE7/stereo_measurements_left/")
+        print("Place Right object photos in: MODULE7/stereo_measurements_right/")
+        print("Then re-run: python stereo_object_dimensions.py")
+        sys.exit(0)
+
+    for idx, (left_path, right_path) in enumerate(stereo_pairs, start=1):
+        left_name = os.path.basename(left_path)
+        right_name = os.path.basename(right_path)
+        obj_key = extract_object_key(left_path)
+
+        img_left = cv2.imread(left_path)
+        img_right = cv2.imread(right_path)
+
+        if img_left is None or img_right is None:
+            print(f"[Pair {idx}] Skipping ({left_name}, {right_name}) - Could not read image(s).\n")
+            continue
+
+        # Undistort both images using calibrated intrinsics
+        undist_left = cv2.undistort(img_left, K1, dist1, None, K1)
+        undist_right = cv2.undistort(img_right, K2, dist2, None, K2)
+
+        contour_left, _ = detect_object_contour(undist_left, is_right=False)
+        contour_right, _ = detect_object_contour(undist_right, is_right=True)
+
+        if contour_left is None:
+            print(f"[Pair {idx}] ({left_name}, {right_name}) - No valid object contour detected.\n")
+            continue
+
+        # Step 1: Estimate distance Z in 3D space using calibrated stereo
+        z_mm, xyz_3d, disparity_px, z_method = estimate_stereo_depth_z(
+            undist_left, undist_right, contour_left, contour_right
+        )
+
+        # Step 2: Classify shape and estimate real-world dimensions using estimated Z
+        measurement_left = classify_and_measure_contour(contour_left, z_mm, filename=left_name)
+        measurement_right = (
+            classify_and_measure_contour(contour_right, z_mm, filename=right_name)
+            if contour_right is not None else measurement_left
+        )
+        shape_type = measurement_left["shape_type"]
+
+        print(f"=== [Object {idx}: {obj_key}] Left: '{left_name}' | Right: '{right_name}' ===")
+        print(f"    Depth Estimation Method: {z_method}")
+        print(f"    Stereo Disparity:        {disparity_px:.2f} px")
+        print(f"    3D Object Position:      X = {xyz_3d[0]:.2f} mm, Y = {xyz_3d[1]:.2f} mm, Z = {z_mm:.2f} mm ({z_mm / 10.0:.2f} cm)")
+        print(f"    Detected Shape Class:    {shape_type} (circularity={measurement_left['circularity']:.3f}, rect_fill={measurement_left['rect_fill_ratio']:.3f})")
+
+        if shape_type == "CIRCULAR":
+            diam_px = measurement_left["diameter_px"]
+            diam_mm = measurement_left["diameter_mm"]
+            print(f"    Pixel Diameter:          {diam_px:.1f} px")
+            print(f"    Real-World Diameter:     {diam_mm:.2f} mm ({diam_mm / 10.0:.2f} cm)\n")
+
+        elif shape_type == "RECTANGULAR":
+            w_px = measurement_left["width_px"]
+            h_px = measurement_left["height_px"]
+            w_mm = measurement_left["width_mm"]
+            h_mm = measurement_left["height_mm"]
+            print(f"    Pixel Dimensions (Left):  {w_px:.1f} px wide x {h_px:.1f} px long/high")
+            print(f"    Real-World Dimensions:    Width = {w_mm:.2f} mm ({w_mm / 10.0:.2f} cm), Length/Height = {h_mm:.2f} mm ({h_mm / 10.0:.2f} cm)\n")
+
+        else:
+            edges = measurement_left["edges"]
+            print(f"    Polygon Edges Detected:  {len(edges)} edges")
+            for edge in edges:
+                print(f"      Edge {edge['edge_index']}: {edge['length_px']:.1f} px -> {edge['length_mm']:.2f} mm ({edge['length_mm'] / 10.0:.2f} cm)")
+            print()
+
+        vis_left = draw_measurement_overlay(undist_left, measurement_left, z_mm, view_label="LEFT")
+        vis_right = draw_measurement_overlay(undist_right, measurement_right, z_mm, view_label="RIGHT")
+
+        # Combine Left and Right annotated views side-by-side
+        combined_stereo_vis = np.hstack((vis_left, vis_right))
+
+        out_path = os.path.join(OUTPUT_DIR, f"stereo_measured_{obj_key}.jpg")
+        cv2.imwrite(out_path, combined_stereo_vis)
+
+        if os.environ.get("HEADLESS", "0") != "1":
+            cv2.namedWindow("Calibrated Stereo Object Measurement (Left | Right)", cv2.WINDOW_NORMAL)
+            cv2.resizeWindow("Calibrated Stereo Object Measurement (Left | Right)", 1200, 600)
+            cv2.imshow("Calibrated Stereo Object Measurement (Left | Right)", combined_stereo_vis)
+            cv2.waitKey(0)
+
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()
 
