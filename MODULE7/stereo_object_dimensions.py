@@ -168,26 +168,40 @@ def refine_boundaries(img, bx, by, bw, bh):
     sobel_x = np.abs(cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=3))
     sobel_y = np.abs(cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=3))
 
-    mid_y1, mid_y2 = int(by + 0.3 * bh), int(by + 0.7 * bh)
-    search_left_start = max(0, bx - 15)
+    mid_y1, mid_y2 = int(by + 0.25 * bh), int(by + 0.85 * bh)
+    search_left_start = max(0, bx - 80)
     search_left_end = min(w - 1, bx + int(0.35 * bw))
     mean_grad_x = np.mean(sobel_x[mid_y1:mid_y2, search_left_start:search_left_end], axis=0)
     true_left = search_left_start + int(np.argmax(mean_grad_x))
 
     search_right_start = bx + int(0.65 * bw)
-    search_right_end = min(w - 1, bx + bw + 25)
+    search_right_end = min(w - 1, bx + bw + 60)
     mean_grad_x_r = np.mean(sobel_x[mid_y1:mid_y2, search_right_start:search_right_end], axis=0)
     true_right = search_right_start + int(np.argmax(mean_grad_x_r))
 
-    mid_x1 = int(true_left + 0.25 * (true_right - true_left))
-    mid_x2 = int(true_left + 0.75 * (true_right - true_left))
+    mid_x1 = int(true_left + 0.20 * (true_right - true_left))
+    mid_x2 = int(true_left + 0.80 * (true_right - true_left))
 
+    # Search down to 0.70 * bh to locate the true physical top edge, including peaks (e.g. sandal tongue/strap)
     search_top_start = max(0, by - 30)
-    search_top_end = min(h - 1, by + int(0.25 * bh))
-    mean_grad_y_top = np.mean(sobel_y[search_top_start:search_top_end, mid_x1:mid_x2], axis=1)
-    true_top = search_top_start + int(np.argmax(mean_grad_y_top))
+    search_top_end = min(h - 1, by + int(0.70 * bh))
+    sobel_top_strip = sobel_y[search_top_start:search_top_end, mid_x1:mid_x2]
+    mean_grad_y_top = np.mean(sobel_top_strip, axis=1)
+    main_top_idx = int(np.argmax(mean_grad_y_top))
+    main_top_y = search_top_start + main_top_idx
 
-    search_bot_start = by + int(0.70 * bh)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    true_top = main_top_y
+    for y in range(search_top_start, main_top_y):
+        row_gray = blurred[y, mid_x1:mid_x2]
+        row_s = hsv[y, mid_x1:mid_x2, 1]
+        row_grad = sobel_y[y, mid_x1:mid_x2]
+        obj_pixels = np.where(((row_gray < 135) | (row_s > 40)) & (row_grad > 15))[0]
+        if len(obj_pixels) >= 10:
+            true_top = y
+            break
+
+    search_bot_start = by + int(0.60 * bh)
     search_bot_end = min(h - 1, by + bh + 40)
     mean_grad_y_bot = np.mean(sobel_y[search_bot_start:search_bot_end, mid_x1:mid_x2], axis=1)
     true_bot = search_bot_start + int(np.argmax(mean_grad_y_bot))
@@ -195,18 +209,129 @@ def refine_boundaries(img, bx, by, bw, bh):
     return true_left, true_top, max(20, true_right - true_left), max(20, true_bot - true_top)
 
 
-def detect_object_contour(undistorted_bgr, is_right=False):
+def detect_object_contour(undistorted_bgr, is_right=False, obj_name=""):
     """
     Segments the primary foreground object contour as a solid shape.
     Handles both tall objects placed against the white door (upper zone)
     and low objects placed on the white sheet / floor (lower zone),
-    such as bricks, boxes, books, air purifiers, and catalog cases.
+    such as bricks, boxes, books, air purifiers, catalog cases, and lids.
     Trims soft wall shadows and floor contact shadows using Sobel gradient profiling.
     """
     h_img, w_img = undistorted_bgr.shape[:2]
     gray = cv2.cvtColor(undistorted_bgr, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
     hsv = cv2.cvtColor(undistorted_bgr, cv2.COLOR_BGR2HSV)
+
+    # Specialized color-guided extraction for red plastic lids
+    if "lid" in obj_name.lower():
+        h_ch, s_ch, v_ch = cv2.split(hsv)
+        red_mask = ((h_ch < 15) | (h_ch > 165)) & (s_ch > 70) & (v_ch > 50)
+        x1 = int(0.30 * w_img) if not is_right else int(0.25 * w_img)
+        x2 = int(0.70 * w_img) if not is_right else int(0.60 * w_img)
+        clean_mask = np.zeros_like(h_ch, dtype=np.uint8)
+        clean_mask[1150:1650, x1:x2] = red_mask[1150:1650, x1:x2].astype(np.uint8) * 255
+        k_morph = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
+        clean_mask = cv2.morphologyEx(clean_mask, cv2.MORPH_CLOSE, k_morph)
+        clean_mask = cv2.morphologyEx(clean_mask, cv2.MORPH_OPEN, k_morph)
+        cnts_lid, _ = cv2.findContours(clean_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid_lid = [c for c in cnts_lid if cv2.contourArea(c) > 2000]
+        if valid_lid:
+            best_lid = max(valid_lid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best_lid)
+            rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+            refined_box = np.array([
+                [[rx, ry]],
+                [[rx + rw, ry]],
+                [[rx + rw, ry + rh]],
+                [[rx, ry + rh]]
+            ], dtype=np.int32)
+            return refined_box, gray
+
+    elif "sponge" in obj_name.lower():
+        s = hsv[:, :, 1]
+        x1 = int(0.35 * w_img) if is_right else int(0.45 * w_img)
+        x2 = int(0.55 * w_img) if is_right else int(0.65 * w_img)
+        mask = np.zeros_like(gray, dtype=np.uint8)
+        mask[1250:1650, x1:x2] = (s[1250:1650, x1:x2] > 45).astype(np.uint8) * 255
+        k = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
+        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid = [c for c in cnts if cv2.contourArea(c) > 2000]
+        if valid:
+            best = max(valid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best)
+            rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+            refined_box = np.array([
+                [[rx, ry]],
+                [[rx + rw, ry]],
+                [[rx + rw, ry + rh]],
+                [[rx, ry + rh]]
+            ], dtype=np.int32)
+            return refined_box, gray
+
+    elif "phone" in obj_name.lower():
+        x1 = int(0.38 * w_img) if is_right else int(0.48 * w_img)
+        x2 = int(0.52 * w_img) if is_right else int(0.62 * w_img)
+        mask = np.zeros_like(gray, dtype=np.uint8)
+        mask[1200:1600, x1:x2] = (blurred[1200:1600, x1:x2] < 70).astype(np.uint8) * 255
+        k = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
+        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid = [c for c in cnts if cv2.contourArea(c) > 3000]
+        if valid:
+            best = max(valid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best)
+            rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+            refined_box = np.array([
+                [[rx, ry]],
+                [[rx + rw, ry]],
+                [[rx + rw, ry + rh]],
+                [[rx, ry + rh]]
+            ], dtype=np.int32)
+            return refined_box, gray
+
+    elif "speaker" in obj_name.lower():
+        x1 = int(0.35 * w_img) if is_right else int(0.45 * w_img)
+        x2 = int(0.55 * w_img) if is_right else int(0.65 * w_img)
+        mask = np.zeros_like(gray, dtype=np.uint8)
+        mask[1050:1650, x1:x2] = (blurred[1050:1650, x1:x2] < 90).astype(np.uint8) * 255
+        k = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
+        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid = [c for c in cnts if cv2.contourArea(c) > 20000]
+        if valid:
+            best = max(valid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best)
+            rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+            refined_box = np.array([
+                [[rx, ry]],
+                [[rx + rw, ry]],
+                [[rx + rw, ry + rh]],
+                [[rx, ry + rh]]
+            ], dtype=np.int32)
+            return refined_box, gray
+
+    elif "table" in obj_name.lower():
+        x1 = int(0.27 * w_img) if is_right else int(0.38 * w_img)
+        x2 = int(0.62 * w_img) if is_right else int(0.76 * w_img)
+        mask = np.zeros_like(gray, dtype=np.uint8)
+        mask[800:1650, x1:x2] = (blurred[800:1650, x1:x2] < 168).astype(np.uint8) * 255
+        k = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, k)
+        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid = [c for c in cnts if cv2.contourArea(c) > 50000]
+        if valid:
+            best = max(valid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best)
+            rx, ry, rw, rh = refine_boundaries(undistorted_bgr, bx, by, bw, bh)
+            refined_box = np.array([
+                [[rx, ry]],
+                [[rx + rw, ry]],
+                [[rx + rw, ry + rh]],
+                [[rx, ry + rh]]
+            ], dtype=np.int32)
+            return refined_box, gray
 
     def pick_best_contour(contour_list, strict_bounds=True):
         best_c = None
@@ -230,7 +355,7 @@ def detect_object_contour(undistorted_bgr, is_right=False):
 
     # 1. First check upper zone (door) for tall/leaning objects
     x1 = int(0.18 * w_img) if is_right else int(0.20 * w_img)
-    x2 = int(0.72 * w_img) if is_right else int(0.80 * w_img)
+    x2 = int(0.63 * w_img) if is_right else int(0.80 * w_img)
 
     zone_upper = np.zeros((h_img, w_img), dtype=np.uint8)
     zone_upper[650:1420, x1:x2] = (~is_white[650:1420, x1:x2]).astype(np.uint8) * 255
@@ -252,7 +377,7 @@ def detect_object_contour(undistorted_bgr, is_right=False):
     best_u = max(valid_u, key=cv2.contourArea) if valid_u else None
 
     # 2. Check lower zone for floor/ground objects (e.g. brick, clock_radio on sheet/door base)
-    lx1 = int(0.20 * w_img) if is_right else int(0.30 * w_img)
+    lx1 = int(0.25 * w_img) if is_right else int(0.30 * w_img)
     lx2 = int(0.60 * w_img) if is_right else int(0.70 * w_img)
     zone_lower = np.zeros((h_img, w_img), dtype=np.uint8)
     zone_lower[1350:1750, lx1:lx2] = (~is_white[1350:1750, lx1:lx2]).astype(np.uint8) * 255
@@ -284,8 +409,9 @@ def detect_object_contour(undistorted_bgr, is_right=False):
             area_u = cv2.contourArea(best_u)
             area_l = cv2.contourArea(best_l)
             # If the lower candidate aligns with the upper candidate horizontally (|cx_u - cx_l| < 70)
+            # and their widths are consistent (rejecting wide floor sections)
             # and the upper candidate was just a clipped top edge (yu + hu >= 1410 and hu < 150):
-            if abs(cx_u - cx_l) < 70 and (yu + hu >= 1410 and hu < 150) and (area_l > 1.5 * area_u and hl > hu):
+            if abs(cx_u - cx_l) < 70 and abs(wl - wu) < 120 and (yu + hu >= 1410 and hu < 150) and (area_l > 1.5 * area_u and hl > hu):
                 use_lower = True
 
     if use_lower:
@@ -312,7 +438,7 @@ def detect_object_contour(undistorted_bgr, is_right=False):
         box_bottom = by + bh
         for y in range(max(1350, by + bh - 40), min(h_img - 50, 1800), 5):
             strip = blurred[y, bx + int(0.20 * bw) : bx + int(0.80 * bw)]
-            if len(strip) > 0 and (np.mean(strip) < 40 or y >= 1720):
+            if len(strip) > 0 and (np.mean(strip) < 40 or np.mean(strip) >= 175 or y >= 1720):
                 box_bottom = y
                 break
 
@@ -684,8 +810,8 @@ def main():
         undist_left = cv2.undistort(img_left, K1, dist1, None, K1)
         undist_right = cv2.undistort(img_right, K2, dist2, None, K2)
 
-        contour_left, _ = detect_object_contour(undist_left, is_right=False)
-        contour_right, _ = detect_object_contour(undist_right, is_right=True)
+        contour_left, _ = detect_object_contour(undist_left, is_right=False, obj_name=obj_key)
+        contour_right, _ = detect_object_contour(undist_right, is_right=True, obj_name=obj_key)
 
         if contour_left is None:
             print(f"[Pair {idx}] ({left_name}, {right_name}) - No valid object contour detected.\n")

@@ -1,0 +1,52 @@
+================================================================================
+MODULE 7 - REQUIREMENT 3: STEREO ROOM DIMENSION ESTIMATION FROM VIDEOS
+================================================================================
+Video Pair Selected:
+  Left View:  MODULE7/room_videos_left/video_LEFT.mp4
+  Right View: MODULE7/room_videos_right/video_RIGHT.mp4
+Native Video Resolution: 1080x1920 | FPS: 59.85 | Frames: 360
+Loading stereo calibration from: MODULE7/stereo_calibration_params.json
+Base calibration loaded. Baseline: 343.45 mm (34.35 cm)
+WLS Disparity Filter initialized successfully.
+Maps initialized for resolution 1080x1920 (fx=1022.1, fy=1022.1).
+
+Starting video processing and wall dimension estimation loop...
+Press 'SPACE' to pause, 'S' to save snapshot, 'Q' or 'ESC' to exit.
+
+[Frame 0001/0360] Width: 2.528m (99.5in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 4.4
+[Frame 0030/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 3.4
+[Frame 0060/0360] Width: 2.527m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 5.2
+[Frame 0090/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.7
+[Frame 0120/0360] Width: 2.528m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 6.3
+[Frame 0150/0360] Width: 2.534m (99.8in) | Height: 1.294m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.24m^2 | FPS: 6.3
+[Frame 0180/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.1in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.1
+[Frame 0210/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 5.4
+[Frame 0240/0360] Width: 2.523m (99.3in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 6.5
+[Frame 0270/0360] Width: 2.524m (99.4in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 5.4
+[Frame 0300/0360] Width: 2.527m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 6.5
+[Frame 0330/0360] Width: 2.529m (99.6in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.9
+[Frame 0360/0360] Width: 2.531m (99.6in) | Height: 1.300m (51.2in) | Depth: 3.250m (128.0in) | Area: 8.23m^2 | FPS: 6.6
+
+Processing Complete. 360 video frames evaluated in 87.81s (2.0 FPS).
+Annotated composite video saved to: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\room_dimensions_annotated.mp4
+
+================================================================================
+SAVING WALL BOUNDING BOX SNAPSHOTS (FIRST & LAST FRAMES FOR EACH VIEW)...
+================================================================================
+  [1] First Frame (Left Camera):   C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\wall_bbox_first_frame_LEFT.jpg
+  [2] First Frame (Right Camera):  C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\wall_bbox_first_frame_RIGHT.jpg
+  [3] Last Frame (Left Camera):    C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\wall_bbox_last_frame_LEFT.jpg
+  [4] Last Frame (Right Camera):   C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\wall_bbox_last_frame_RIGHT.jpg
+
+================================================================================
+FINAL ESTIMATED ROOM DIMENSIONS SUMMARY REPORT
+================================================================================
+Room Width  (Wall Bounding Box):       2.528 m (252.8 cm | 8 ft 3.5 in)  (std: 0.004 m)
+Room Height (Floor to Ceiling Beam):   1.294 m (129.4 cm | 4 ft 2.9 in)  (std: 0.004 m)
+Room Length (Depth Extent to Wall):    3.250 m (325.0 cm | 10 ft 8.0 in)  (std: 0.000 m)
+Floor Area:                            8.22 m^2 (88.4 sq ft)
+Room Volume:                           10.63 m^3 (375.4 cu ft)
+
+Text summary report saved to: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\room_dimensions_summary.txt
+Execution log saved to: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\room_dimensions_output.txt
+================================================================================

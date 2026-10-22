@@ -2,23 +2,23 @@
 Focal Lengths: fx = 3110.96 px, fy = 3106.86 px
 Calibrated Baseline ||T|| = 343.45 mm (34.35 cm)
 
-Found 10 stereo object pair(s) to process.
+Found 20 stereo object pair(s) to process.
 
 === [Object 1: air_purifier] Left: 'air_purifier_LEFT.jpg' | Right: 'air_purifier_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        439.20 px
-    3D Object Position:      X = 78.84 mm, Y = -137.85 mm, Z = 1368.95 mm (136.89 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.766, rect_fill=1.000)
-    Pixel Dimensions (Left):  590.0 px wide x 809.0 px long/high
-    Real-World Dimensions:    Width = 259.62 mm (25.96 cm), Length/Height = 356.46 mm (35.65 cm)
+    Stereo Disparity:        442.31 px
+    3D Object Position:      X = 80.72 mm, Y = -135.57 mm, Z = 1368.68 mm (136.87 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.764, rect_fill=1.000)
+    Pixel Dimensions (Left):  590.0 px wide x 826.0 px long/high
+    Real-World Dimensions:    Width = 259.57 mm (25.96 cm), Length/Height = 363.88 mm (36.39 cm)
 
 === [Object 2: black_box] Left: 'black_box_LEFT.jpg' | Right: 'black_box_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        453.83 px
-    3D Object Position:      X = 198.96 mm, Y = -171.13 mm, Z = 1349.92 mm (134.99 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.777, rect_fill=1.000)
-    Pixel Dimensions (Left):  463.0 px wide x 568.0 px long/high
-    Real-World Dimensions:    Width = 200.91 mm (20.09 cm), Length/Height = 246.79 mm (24.68 cm)
+    Stereo Disparity:        429.91 px
+    3D Object Position:      X = 101.60 mm, Y = -162.50 mm, Z = 1382.45 mm (138.25 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.776, rect_fill=1.000)
+    Pixel Dimensions (Left):  461.0 px wide x 572.0 px long/high
+    Real-World Dimensions:    Width = 204.86 mm (20.49 cm), Length/Height = 254.52 mm (25.45 cm)
 
 === [Object 3: book] Left: 'book_LEFT.jpg' | Right: 'book_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
@@ -30,57 +30,137 @@ Found 10 stereo object pair(s) to process.
 
 === [Object 4: box] Left: 'box_LEFT.jpg' | Right: 'BOX_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        398.81 px
-    3D Object Position:      X = 176.09 mm, Y = -162.99 mm, Z = 1450.79 mm (145.08 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.764, rect_fill=1.000)
-    Pixel Dimensions (Left):  509.0 px wide x 708.0 px long/high
-    Real-World Dimensions:    Width = 237.37 mm (23.74 cm), Length/Height = 330.61 mm (33.06 cm)
+    Stereo Disparity:        398.18 px
+    3D Object Position:      X = 180.33 mm, Y = -159.84 mm, Z = 1453.23 mm (145.32 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.763, rect_fill=1.000)
+    Pixel Dimensions (Left):  505.0 px wide x 709.0 px long/high
+    Real-World Dimensions:    Width = 235.90 mm (23.59 cm), Length/Height = 331.63 mm (33.16 cm)
 
 === [Object 5: brick] Left: 'brick_LEFT.jpg' | Right: 'brick_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
     Stereo Disparity:        394.07 px
     3D Object Position:      X = 74.95 mm, Y = -224.44 mm, Z = 1447.57 mm (144.76 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.698, rect_fill=1.000)
-    Pixel Dimensions (Left):  380.0 px wide x 190.0 px long/high
-    Real-World Dimensions:    Width = 176.82 mm (17.68 cm), Length/Height = 88.53 mm (8.85 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.699, rect_fill=1.000)
+    Pixel Dimensions (Left):  380.0 px wide x 191.0 px long/high
+    Real-World Dimensions:    Width = 176.82 mm (17.68 cm), Length/Height = 88.99 mm (8.90 cm)
 
 === [Object 6: catalog_case] Left: 'catalog_case_LEFT.jpg' | Right: 'catalog_case_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        412.03 px
-    3D Object Position:      X = 122.48 mm, Y = -239.63 mm, Z = 1399.74 mm (139.97 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.772, rect_fill=1.000)
-    Pixel Dimensions (Left):  1044.0 px wide x 805.0 px long/high
-    Real-World Dimensions:    Width = 469.73 mm (46.97 cm), Length/Height = 362.68 mm (36.27 cm)
+    Stereo Disparity:        410.42 px
+    3D Object Position:      X = 124.78 mm, Y = -375.67 mm, Z = 1385.90 mm (138.59 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.774, rect_fill=1.000)
+    Pixel Dimensions (Left):  1040.0 px wide x 820.0 px long/high
+    Real-World Dimensions:    Width = 463.31 mm (46.33 cm), Length/Height = 365.78 mm (36.58 cm)
 
 === [Object 7: clock_radio] Left: 'clock_radio_LEFT.jpg' | Right: 'clock_radio_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        382.89 px
-    3D Object Position:      X = 95.75 mm, Y = -237.85 mm, Z = 1466.23 mm (146.62 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.775, rect_fill=1.000)
-    Pixel Dimensions (Left):  205.0 px wide x 257.0 px long/high
-    Real-World Dimensions:    Width = 96.62 mm (9.66 cm), Length/Height = 121.29 mm (12.13 cm)
+    Stereo Disparity:        382.81 px
+    3D Object Position:      X = 97.71 mm, Y = -238.70 mm, Z = 1465.89 mm (146.59 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.774, rect_fill=1.000)
+    Pixel Dimensions (Left):  205.0 px wide x 260.0 px long/high
+    Real-World Dimensions:    Width = 96.60 mm (9.66 cm), Length/Height = 122.67 mm (12.27 cm)
 
 === [Object 8: large_circle_lid] Left: 'large_circle_lid_LEFT.jpg' | Right: 'large_circle_lid_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
     Stereo Disparity:        356.66 px
     3D Object Position:      X = 168.08 mm, Y = -251.95 mm, Z = 1526.53 mm (152.65 cm)
     Detected Shape Class:    CIRCULAR (circularity=0.785, rect_fill=1.000)
-    Pixel Diameter:          354.0 px
-    Real-World Diameter:     173.71 mm (17.37 cm)
+    Pixel Diameter:          355.5 px
+    Real-World Diameter:     174.44 mm (17.44 cm)
 
 === [Object 9: large_rectangle_lid] Left: 'large_rectangle_lid_LEFT.jpg' | Right: 'large_rectangle_lid_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        378.76 px
-    3D Object Position:      X = 96.48 mm, Y = -267.38 mm, Z = 1475.68 mm (147.57 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.778, rect_fill=1.000)
-    Pixel Dimensions (Left):  456.0 px wide x 374.0 px long/high
-    Real-World Dimensions:    Width = 216.30 mm (21.63 cm), Length/Height = 177.64 mm (17.76 cm)
+    Stereo Disparity:        380.75 px
+    3D Object Position:      X = 95.94 mm, Y = -270.09 mm, Z = 1471.03 mm (147.10 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.781, rect_fill=1.000)
+    Pixel Dimensions (Left):  455.0 px wide x 389.0 px long/high
+    Real-World Dimensions:    Width = 215.15 mm (21.51 cm), Length/Height = 184.18 mm (18.42 cm)
 
 === [Object 10: remote_control] Left: 'remote_control_LEFT.jpg' | Right: 'remote_control_RIGHT.jpg' ===
     Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
-    Stereo Disparity:        373.26 px
-    3D Object Position:      X = 48.09 mm, Y = -242.27 mm, Z = 1491.35 mm (149.14 cm)
-    Detected Shape Class:    RECTANGULAR (circularity=0.567, rect_fill=1.000)
-    Pixel Dimensions (Left):  304.0 px wide x 94.0 px long/high
-    Real-World Dimensions:    Width = 145.73 mm (14.57 cm), Length/Height = 45.12 mm (4.51 cm)
+    Stereo Disparity:        373.40 px
+    3D Object Position:      X = 143.82 mm, Y = -248.80 mm, Z = 1490.18 mm (149.02 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.576, rect_fill=1.000)
+    Pixel Dimensions (Left):  304.0 px wide x 97.0 px long/high
+    Real-World Dimensions:    Width = 145.62 mm (14.56 cm), Length/Height = 46.53 mm (4.65 cm)
+
+=== [Object 11: rice_cooker] Left: 'rice_cooker_LEFT.jpg' | Right: 'rice_cooker_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        395.21 px
+    3D Object Position:      X = 101.16 mm, Y = -236.87 mm, Z = 1444.98 mm (144.50 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.774, rect_fill=1.000)
+    Pixel Dimensions (Left):  353.0 px wide x 278.0 px long/high
+    Real-World Dimensions:    Width = 163.96 mm (16.40 cm), Length/Height = 129.30 mm (12.93 cm)
+
+=== [Object 12: sandal] Left: 'sandal_LEFT.jpg' | Right: 'sandal_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        374.21 px
+    3D Object Position:      X = 118.04 mm, Y = -263.40 mm, Z = 1486.02 mm (148.60 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.612, rect_fill=1.000)
+    Pixel Dimensions (Left):  536.0 px wide x 193.0 px long/high
+    Real-World Dimensions:    Width = 256.03 mm (25.60 cm), Length/Height = 92.31 mm (9.23 cm)
+
+=== [Object 13: shoe_box] Left: 'shoe_box_LEFT.jpg' | Right: 'shoe_box_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        379.71 px
+    3D Object Position:      X = 103.30 mm, Y = -211.19 mm, Z = 1481.81 mm (148.18 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.660, rect_fill=1.000)
+    Pixel Dimensions (Left):  631.0 px wide x 271.0 px long/high
+    Real-World Dimensions:    Width = 300.56 mm (30.06 cm), Length/Height = 129.25 mm (12.93 cm)
+
+=== [Object 14: small_rectangle_lid] Left: 'small_rectangle_lid_LEFT.jpg' | Right: 'small_rectangle_lid_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        343.35 px
+    3D Object Position:      X = 200.35 mm, Y = -353.50 mm, Z = 1538.27 mm (153.83 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.774, rect_fill=1.000)
+    Pixel Dimensions (Left):  342.0 px wide x 269.0 px long/high
+    Real-World Dimensions:    Width = 169.11 mm (16.91 cm), Length/Height = 133.19 mm (13.32 cm)
+
+=== [Object 15: small_round_lid] Left: 'small_round_lid_LEFT.jpg' | Right: 'small_round_lid_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        387.86 px
+    3D Object Position:      X = 21.23 mm, Y = -248.23 mm, Z = 1457.09 mm (145.71 cm)
+    Detected Shape Class:    CIRCULAR (circularity=0.785, rect_fill=1.000)
+    Pixel Diameter:          277.0 px
+    Real-World Diameter:     129.74 mm (12.97 cm)
+
+=== [Object 16: small_safe] Left: 'small_safe_LEFT.jpg' | Right: 'small_safe_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        379.44 px
+    3D Object Position:      X = 115.61 mm, Y = -304.36 mm, Z = 1463.90 mm (146.39 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.779, rect_fill=1.000)
+    Pixel Dimensions (Left):  618.0 px wide x 518.0 px long/high
+    Real-World Dimensions:    Width = 290.81 mm (29.08 cm), Length/Height = 244.07 mm (24.41 cm)
+
+=== [Object 17: smart_phone] Left: 'smart_phone_LEFT.jpg' | Right: 'smart_phone_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        332.12 px
+    3D Object Position:      X = 85.28 mm, Y = -381.35 mm, Z = 1562.31 mm (156.23 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.677, rect_fill=1.000)
+    Pixel Dimensions (Left):  137.0 px wide x 299.0 px long/high
+    Real-World Dimensions:    Width = 68.80 mm (6.88 cm), Length/Height = 150.35 mm (15.04 cm)
+
+=== [Object 18: speaker_box] Left: 'speaker_box_LEFT.jpg' | Right: 'speaker_box_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        404.30 px
+    3D Object Position:      X = 129.89 mm, Y = -219.38 mm, Z = 1430.13 mm (143.01 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.785, rect_fill=1.000)
+    Pixel Dimensions (Left):  401.0 px wide x 396.0 px long/high
+    Real-World Dimensions:    Width = 184.34 mm (18.43 cm), Length/Height = 182.28 mm (18.23 cm)
+
+=== [Object 19: sponge] Left: 'sponge_LEFT.jpg' | Right: 'sponge_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        326.39 px
+    3D Object Position:      X = 111.89 mm, Y = -300.39 mm, Z = 1595.15 mm (159.52 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.741, rect_fill=1.000)
+    Pixel Dimensions (Left):  184.0 px wide x 113.0 px long/high
+    Real-World Dimensions:    Width = 94.35 mm (9.43 cm), Length/Height = 58.02 mm (5.80 cm)
+
+=== [Object 20: table_top] Left: 'table_top_LEFT.jpg' | Right: 'table_top_RIGHT.jpg' ===
+    Depth Estimation Method: Stereo Triangulation (cv2.triangulatePoints)
+    Stereo Disparity:        403.43 px
+    3D Object Position:      X = 181.43 mm, Y = -374.07 mm, Z = 1411.73 mm (141.17 cm)
+    Detected Shape Class:    RECTANGULAR (circularity=0.772, rect_fill=1.000)
+    Pixel Dimensions (Left):  938.0 px wide x 719.0 px long/high
+    Real-World Dimensions:    Width = 425.66 mm (42.57 cm), Length/Height = 326.71 mm (32.67 cm)
 
