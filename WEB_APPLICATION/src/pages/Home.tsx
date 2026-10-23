@@ -78,6 +78,23 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        <section className="bg-white p-8 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h3 className="text-2xl font-semibold mb-2 text-gray-800">Module 7: Stereo Vision, 3D Reconstruction, & Room Dimensions</h3>
+              <p className="text-gray-600">
+                Stereo camera calibration, 3D object size and shape estimation, and continuous room dimension estimation from stereo videos.
+              </p>
+            </div>
+            <Link
+              to="/module7"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap shadow-sm hover:shadow"
+            >
+              View Demonstration
+            </Link>
+          </div>
+        </section>
+
         {/* Future modules can go here */}
         <section className="bg-gray-100 p-8 rounded-lg shadow-inner border border-gray-200 opacity-70">
           <div className="text-center">

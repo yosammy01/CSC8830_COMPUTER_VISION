@@ -1,0 +1,72 @@
+=== Loaded Intrinsic Calibration Parameters (Same Camera for Left & Right) ===
+Camera Matrix (K):
+ [[3.11095838e+03 0.00000000e+00 1.47352465e+03]
+ [0.00000000e+00 3.10685602e+03 2.00792389e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]
+Distortion Coefficients (dist):
+ [[-0.01423386  0.26873264  0.00137658 -0.00078449 -0.42944938]]
+
+Found 18 left image(s) in 'left_images/' and 18 right image(s) in 'right_images/'.
+[Pair 1] Corners detected in BOTH: Left='LEFT1.jpg', Right='RIGHT1.jpg'
+[Pair 2] Corners detected in BOTH: Left='LEFT2.jpg', Right='RIGHT2.jpg'
+[Pair 3] Corners detected in BOTH: Left='LEFT3.jpg', Right='RIGHT3.jpg'
+[Pair 4] Corners detected in BOTH: Left='LEFT4.jpg', Right='RIGHT4.jpg'
+[Pair 5] Skipping: Checkerboard Left=Found ('LEFT5.jpg'), Right=NOT Found ('RIGHT5.jpg')
+[Pair 6] Corners detected in BOTH: Left='LEFT6.jpg', Right='RIGHT6.jpg'
+[Pair 7] Corners detected in BOTH: Left='LEFT7.jpg', Right='RIGHT7.jpg'
+[Pair 8] Corners detected in BOTH: Left='LEFT8.jpg', Right='RIGHT8.jpg'
+[Pair 9] Corners detected in BOTH: Left='LEFT9.jpg', Right='RIGHT9.jpg'
+[Pair 10] Corners detected in BOTH: Left='LEFT10.jpg', Right='RIGHT10.jpg'
+[Pair 11] Corners detected in BOTH: Left='LEFT11.jpg', Right='RIGHT11.jpg'
+[Pair 12] Corners detected in BOTH: Left='LEFT12.jpg', Right='RIGHT12.jpg'
+[Pair 13] Corners detected in BOTH: Left='LEFT13.jpg', Right='RIGHT13.jpg'
+[Pair 14] Corners detected in BOTH: Left='LEFT14.jpg', Right='RIGHT14.jpg'
+[Pair 15] Corners detected in BOTH: Left='LEFT15.jpg', Right='RIGHT15.jpg'
+[Pair 16] Corners detected in BOTH: Left='LEFT16.jpg', Right='RIGHT16.jpg'
+[Pair 17] Corners detected in BOTH: Left='LEFT17.jpg', Right='RIGHT17.jpg'
+[Pair 18] Corners detected in BOTH: Left='LEFT18.jpg', Right='RIGHT18.jpg'
+
+Running cv2.stereoCalibrate on 17 valid stereo pair(s)...
+
+=== Stereo Calibration Successful ===
+Valid Stereo Pairs Used: 17 / 18
+Stereo RMS Reprojection Error: 18.246857 pixels
+Estimated Baseline ||T||: 343.45 mm (34.35 cm)
+
+Rotation Matrix (R) [Left -> Right]:
+ [[ 9.93793347e-01 -3.69149114e-02  1.04938427e-01]
+ [ 3.71192516e-02  9.99310843e-01  5.77436737e-06]
+ [-1.04866321e-01  3.88949734e-03  9.94478721e-01]]
+
+Translation Vector (T in mm) [Left -> Right]:
+ [[-3.43055905e+02]
+ [ 2.92454103e-01]
+ [ 1.64516022e+01]]
+
+Essential Matrix (E):
+ [[-6.41339746e-01 -1.64391269e+01  2.90744384e-01]
+ [-1.96255179e+01  7.27005594e-01  3.42888203e+02]
+ [-1.30246174e+01 -3.42808690e+02 -3.26706043e-02]]
+
+Fundamental Matrix (F):
+ [[ 1.34338836e-08  3.44798407e-07 -7.31070178e-04]
+ [ 4.11630577e-07 -1.52685336e-08 -2.29493546e-02]
+ [ 2.41793363e-06  2.18908657e-02  1.00000000e+00]]
+
+Left Projection Matrix (P1):
+ [[3.76156949e+03 0.00000000e+00 1.44274504e+03 0.00000000e+00]
+ [0.00000000e+00 3.76156949e+03 2.01232834e+03 0.00000000e+00]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 0.00000000e+00]]
+
+Right Projection Matrix (P2):
+ [[ 3.76156949e+03  0.00000000e+00  1.44274504e+03 -1.29191209e+06]
+ [ 0.00000000e+00  3.76156949e+03  2.01232834e+03  0.00000000e+00]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  0.00000000e+00]]
+
+Disparity-to-Depth Matrix (Q):
+ [[ 1.00000000e+00  0.00000000e+00  0.00000000e+00 -1.44274504e+03]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -2.01232834e+03]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  3.76156949e+03]
+ [ 0.00000000e+00  0.00000000e+00  2.91162960e-03 -0.00000000e+00]]
+
+Saved stereo calibration parameters to 'stereo_calibration_params.json'
