@@ -1,40 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import stereoCalibrationParamsJson from '../../../MODULE7/stereo_calibration_params.json?raw';
 
-const OBJECT_ITEMS = [
-  { id: 'air_purifier', name: 'Air Purifier', left: 'air_purifier_LEFT.jpg', right: 'air_purifier_RIGHT.jpg' },
-  { id: 'black_box', name: 'Black Box', left: 'black_box_LEFT.jpg', right: 'black_box_RIGHT.jpg' },
-  { id: 'book', name: 'Book', left: 'book_LEFT.jpg', right: 'book_RIGHT.jpg' },
-  { id: 'box', name: 'Box', left: 'box_LEFT.jpg', right: 'BOX_RIGHT.jpg' },
-  { id: 'brick', name: 'Brick', left: 'brick_LEFT.jpg', right: 'brick_RIGHT.jpg' },
-  { id: 'catalog_case', name: 'Catalog Case', left: 'catalog_case_LEFT.jpg', right: 'catalog_case_RIGHT.jpg' },
-  { id: 'clock_radio', name: 'Clock Radio', left: 'clock_radio_LEFT.jpg', right: 'clock_radio_RIGHT.jpg' },
-  { id: 'large_circle_lid', name: 'Large Circle Lid', left: 'large_circle_lid_LEFT.jpg', right: 'large_circle_lid_RIGHT.jpg' },
-  { id: 'large_rectangle_lid', name: 'Large Rectangle Lid', left: 'large_rectangle_lid_LEFT.jpg', right: 'large_rectangle_lid_RIGHT.jpg' },
-  { id: 'remote_control', name: 'Remote Control', left: 'remote_control_LEFT.jpg', right: 'remote_control_RIGHT.jpg' },
-  { id: 'rice_cooker', name: 'Rice Cooker', left: 'rice_cooker_LEFT.jpg', right: 'rice_cooker_RIGHT.jpg' },
-  { id: 'sandal', name: 'Sandal', left: 'sandal_LEFT.jpg', right: 'sandal_RIGHT.jpg' },
-  { id: 'shoe_box', name: 'Shoe Box', left: 'shoe_box_LEFT.jpg', right: 'shoe_box_RIGHT.jpg' },
-  { id: 'small_rectangle_lid', name: 'Small Rectangle Lid', left: 'small_rectangle_lid_LEFT.jpg', right: 'small_rectangle_lid_RIGHT.jpg' },
-  { id: 'small_round_lid', name: 'Small Round Lid', left: 'small_round_lid_LEFT.jpg', right: 'small_round_lid_RIGHT.jpg' },
-  { id: 'small_safe', name: 'Small Safe', left: 'small_safe_LEFT.jpg', right: 'small_safe_RIGHT.jpg' },
-  { id: 'smart_phone', name: 'Smart Phone', left: 'smart_phone_LEFT.jpg', right: 'smart_phone_RIGHT.jpg' },
-  { id: 'speaker_box', name: 'Speaker Box', left: 'speaker_box_LEFT.jpg', right: 'speaker_box_RIGHT.jpg' },
-  { id: 'sponge', name: 'Sponge', left: 'sponge_LEFT.jpg', right: 'sponge_RIGHT.jpg' },
-  { id: 'table_top', name: 'Table Top', left: 'table_top_LEFT.jpg', right: 'table_top_RIGHT.jpg' },
+interface ObjectData {
+  id: string;
+  name: string;
+  left: string;
+  right: string;
+  disparity: number;
+  depthZ: number;
+  estWidth: number;
+  actWidth: number;
+  widthErr: number;
+  estHeight: number;
+  actHeight: number;
+  heightErr: number;
+}
+
+const OBJECT_ITEMS: ObjectData[] = [
+  { id: 'air_purifier', name: 'Air Purifier', left: 'air_purifier_LEFT.jpg', right: 'air_purifier_RIGHT.jpg', disparity: 442.31, depthZ: 1368.68, estWidth: 259.57, actWidth: 282.60, widthErr: 8.15, estHeight: 363.88, actHeight: 381.00, heightErr: 4.49 },
+  { id: 'black_box', name: 'Black Box', left: 'black_box_LEFT.jpg', right: 'black_box_RIGHT.jpg', disparity: 429.91, depthZ: 1382.45, estWidth: 204.86, actWidth: 230.20, widthErr: 11.01, estHeight: 254.52, actHeight: 277.80, heightErr: 8.38 },
+  { id: 'book', name: 'Book', left: 'book_LEFT.jpg', right: 'book_RIGHT.jpg', disparity: 352.23, depthZ: 1542.25, estWidth: 106.09, actWidth: 112.70, widthErr: 5.87, estHeight: 169.27, actHeight: 177.80, heightErr: 4.80 },
+  { id: 'box', name: 'Box', left: 'box_LEFT.jpg', right: 'BOX_RIGHT.jpg', disparity: 398.18, depthZ: 1453.23, estWidth: 235.90, actWidth: 254.00, widthErr: 7.13, estHeight: 331.63, actHeight: 336.50, heightErr: 1.45 },
+  { id: 'brick', name: 'Brick', left: 'brick_LEFT.jpg', right: 'brick_RIGHT.jpg', disparity: 394.07, depthZ: 1447.57, estWidth: 176.82, actWidth: 203.20, widthErr: 12.98, estHeight: 88.99, actHeight: 92.07, heightErr: 3.35 },
+  { id: 'catalog_case', name: 'Catalog Case', left: 'catalog_case_LEFT.jpg', right: 'catalog_case_RIGHT.jpg', disparity: 410.42, depthZ: 1385.90, estWidth: 463.31, actWidth: 457.20, widthErr: 1.34, estHeight: 365.78, actHeight: 379.41, heightErr: 3.59 },
+  { id: 'clock_radio', name: 'Clock Radio', left: 'clock_radio_LEFT.jpg', right: 'clock_radio_RIGHT.jpg', disparity: 382.81, depthZ: 1465.89, estWidth: 96.60, actWidth: 107.90, widthErr: 10.47, estHeight: 122.67, actHeight: 127.00, heightErr: 3.41 },
+  { id: 'large_circle_lid', name: 'Large Circle Lid', left: 'large_circle_lid_LEFT.jpg', right: 'large_circle_lid_RIGHT.jpg', disparity: 356.66, depthZ: 1526.53, estWidth: 174.44, actWidth: 190.50, widthErr: 8.43, estHeight: 174.44, actHeight: 190.50, heightErr: 8.43 },
+  { id: 'large_rectangle_lid', name: 'Large Rectangle Lid', left: 'large_rectangle_lid_LEFT.jpg', right: 'large_rectangle_lid_RIGHT.jpg', disparity: 380.75, depthZ: 1471.03, estWidth: 215.15, actWidth: 247.60, widthErr: 13.11, estHeight: 184.18, actHeight: 225.40, heightErr: 18.29 },
+  { id: 'remote_control', name: 'Remote Control', left: 'remote_control_LEFT.jpg', right: 'remote_control_RIGHT.jpg', disparity: 373.40, depthZ: 1490.18, estWidth: 145.62, actWidth: 169.86, widthErr: 14.27, estHeight: 46.53, actHeight: 49.21, heightErr: 5.45 },
+  { id: 'rice_cooker', name: 'Rice Cooker', left: 'rice_cooker_LEFT.jpg', right: 'rice_cooker_RIGHT.jpg', disparity: 395.21, depthZ: 1444.98, estWidth: 163.96, actWidth: 214.31, widthErr: 23.49, estHeight: 129.30, actHeight: 157.16, heightErr: 17.73 },
+  { id: 'sandal', name: 'Sandal', left: 'sandal_LEFT.jpg', right: 'sandal_RIGHT.jpg', disparity: 374.21, depthZ: 1486.02, estWidth: 256.03, actWidth: 295.27, widthErr: 13.29, estHeight: 92.31, actHeight: 95.25, heightErr: 3.09 },
+  { id: 'shoe_box', name: 'Shoe Box', left: 'shoe_box_LEFT.jpg', right: 'shoe_box_RIGHT.jpg', disparity: 379.71, depthZ: 1481.81, estWidth: 300.56, actWidth: 330.20, widthErr: 8.98, estHeight: 129.75, actHeight: 114.30, heightErr: 13.08 },
+  { id: 'small_rectangle_lid', name: 'Small Rectangle Lid', left: 'small_rectangle_lid_LEFT.jpg', right: 'small_rectangle_lid_RIGHT.jpg', disparity: 343.35, depthZ: 1538.27, estWidth: 169.11, actWidth: 206.40, widthErr: 18.07, estHeight: 133.19, actHeight: 133.30, heightErr: 0.08 },
+  { id: 'small_round_lid', name: 'Small Round Lid', left: 'small_round_lid_LEFT.jpg', right: 'small_round_lid_RIGHT.jpg', disparity: 387.86, depthZ: 1457.09, estWidth: 129.74, actWidth: 152.40, widthErr: 14.87, estHeight: 129.74, actHeight: 152.40, heightErr: 14.87 },
+  { id: 'small_safe', name: 'Small Safe', left: 'small_safe_LEFT.jpg', right: 'small_safe_RIGHT.jpg', disparity: 379.44, depthZ: 1463.90, estWidth: 290.81, actWidth: 323.85, widthErr: 10.20, estHeight: 244.07, actHeight: 254.00, heightErr: 3.91 },
+  { id: 'smart_phone', name: 'Smart Phone', left: 'smart_phone_LEFT.jpg', right: 'smart_phone_RIGHT.jpg', disparity: 332.12, depthZ: 1562.31, estWidth: 68.80, actWidth: 79.38, widthErr: 13.33, estHeight: 150.35, actHeight: 158.75, heightErr: 5.29 },
+  { id: 'speaker_box', name: 'Speaker Box', left: 'speaker_box_LEFT.jpg', right: 'speaker_box_RIGHT.jpg', disparity: 404.30, depthZ: 1430.13, estWidth: 184.34, actWidth: 206.38, widthErr: 10.68, estHeight: 182.28, actHeight: 214.31, heightErr: 14.95 },
+  { id: 'sponge', name: 'Sponge', left: 'sponge_LEFT.jpg', right: 'sponge_RIGHT.jpg', disparity: 326.39, depthZ: 1595.15, estWidth: 94.35, actWidth: 104.77, widthErr: 9.95, estHeight: 58.02, actHeight: 61.91, heightErr: 6.28 },
+  { id: 'table_top', name: 'Table Top', left: 'table_top_LEFT.jpg', right: 'table_top_RIGHT.jpg', disparity: 403.43, depthZ: 1411.73, estWidth: 425.66, actWidth: 481.00, widthErr: 11.51, estHeight: 326.71, actHeight: 368.30, heightErr: 11.29 },
 ];
 
 const CALIBRATION_PAIRS = Array.from({ length: 18 }, (_, i) => ({
   pairNum: i + 1,
   left: `LEFT${i + 1}.jpg`,
   right: `RIGHT${i + 1}.jpg`,
-  valid: i + 1 !== 5, // Pair 5 was skipped during calibration due to pattern occlusion
+  valid: i + 1 !== 5,
 }));
 
 const Module7App: React.FC = () => {
-  const [selectedObjIndex, setSelectedObjIndex] = useState<number>(0);
-  const [selectedCalibIndex, setSelectedCalibIndex] = useState<number>(0);
+  const [calibViewMode, setCalibViewMode] = useState<'left' | 'right'>('left');
+  const [objViewMode, setObjViewMode] = useState<'left' | 'right'>('left');
   const [selectedFrameView, setSelectedFrameView] = useState<'first' | 'last'>('first');
+
   const [calibLog, setCalibLog] = useState<string>('Loading stereo calibration log...');
   const [dimLog, setDimLog] = useState<string>('Loading stereo dimensions log...');
   const [roomLog, setRoomLog] = useState<string>('Loading room dimensions log...');
@@ -42,437 +59,497 @@ const Module7App: React.FC = () => {
   const baseUrl = import.meta.env.BASE_URL;
 
   useEffect(() => {
-    fetch(`${baseUrl}module7/stereo_calibration_output.txt`)
+    fetch(`${baseUrl}Module7/stereo_calibration_output.txt`)
       .then((r) => r.text())
       .then(setCalibLog)
       .catch((err) => setCalibLog(`Unable to load calibration log: ${err}`));
 
-    fetch(`${baseUrl}module7/stereo_dimensions_output.txt`)
+    fetch(`${baseUrl}Module7/stereo_dimensions_output.txt`)
       .then((r) => r.text())
       .then(setDimLog)
       .catch((err) => setDimLog(`Unable to load dimensions log: ${err}`));
 
-    fetch(`${baseUrl}module7/room_dimensions_output.txt`)
+    fetch(`${baseUrl}Module7/room_dimensions_output.txt`)
       .then((r) => r.text())
       .then(setRoomLog)
       .catch((err) => setRoomLog(`Unable to load room dimensions log: ${err}`));
   }, [baseUrl]);
 
-  const currentObj = OBJECT_ITEMS[selectedObjIndex];
-  const currentCalib = CALIBRATION_PAIRS[selectedCalibIndex];
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-8 font-sans">
-      {/* Navigation Header */}
-      <header className="max-w-5xl mx-auto mb-10 relative">
+      <header className="max-w-4xl mx-auto mb-10 relative">
         <Link
           to="/"
           className="absolute left-0 top-1 text-blue-600 hover:text-blue-800 font-semibold transition flex items-center"
         >
           &larr; Back to Home
         </Link>
-        <div className="text-center pt-6 md:pt-0">
+        <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-2">CSC 8830: Computer Vision</h1>
-          <h2 className="text-2xl text-gray-600">Module 7: Stereo Vision, 3D Reconstruction, & Room Dimensions</h2>
+          <h2 className="text-2xl text-gray-600">Module 7: Calibrated Stereo 3D Object & Room Dimensions Demonstration</h2>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto space-y-8">
-        {/* Project Resources & PDFs */}
+      <main className="max-w-4xl mx-auto space-y-8">
+        {/* Links & Repository */}
         <section className="bg-white p-6 rounded-lg shadow-md flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h3 className="text-xl font-semibold mb-1">Project Resources</h3>
-            <p className="text-sm text-gray-500">
-              Access the source code, technical reports, and theoretical derivations.
-            </p>
+            <p className="text-sm text-gray-500">Access the code repository, technical report, and mathematical derivations.</p>
           </div>
-          <div className="flex flex-wrap gap-3 justify-center md:justify-end">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+            <Link
+              to="/module7/live"
+              style={{
+                display: 'block',
+                backgroundColor: '#10b981',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
+            >
+              Try Live Interactive Demo
+            </Link>
             <a
               href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE7"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-800 text-white px-5 py-2.5 rounded-lg hover:bg-gray-900 transition font-medium text-sm shadow-sm"
+              style={{
+                display: 'block',
+                backgroundColor: '#1f2937',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
             >
               GitHub Repo
             </a>
             <a
-              href={`${baseUrl}module7/Module7_Report.pdf`}
+              href={`${baseUrl}Module7/Module7_Report.pdf`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium text-sm shadow-sm"
+              style={{
+                display: 'block',
+                backgroundColor: '#2563eb',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
             >
               View Report PDF
             </a>
             <a
-              href={`${baseUrl}module7/Theory_Uncalibrated_Stereo_Dimensions.pdf`}
+              href={`${baseUrl}Module7/Theory_Uncalibrated_Stereo_Dimensions.pdf`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition font-medium text-sm shadow-sm"
+              style={{
+                display: 'block',
+                backgroundColor: '#4f46e5',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
             >
-              Theory & Derivation PDF
-            </a>
-            <a
-              href={`${baseUrl}module7/Uncalibrated_Stereo_Dimensions.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-purple-600 text-white px-5 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium text-sm shadow-sm"
-            >
-              Uncalibrated Stereo PDF
+              View Derivations PDF
             </a>
           </div>
         </section>
 
-        {/* Working Video Demonstrations */}
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold border-b border-gray-200 pb-2 mb-4 text-gray-800">
-            Working Demonstrations
-          </h3>
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            Live video demonstrations demonstrating 3D object size and shape estimation via stereo triangulation, as well as real-time patio room dimension estimation from synchronized stereo video streams.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Demonstration 1 */}
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
-              <h4 className="font-semibold text-gray-800 mb-2 text-center">
-                Demonstration 1: Stereo Triangulation & Object Dimension Estimation
-              </h4>
-              <div className="w-full max-w-xs aspect-[9/16] bg-black rounded-lg overflow-hidden shadow">
-                <iframe
-                  className="w-full h-full border-0"
-                  src="https://www.youtube.com/embed/W1lUVtJKRtM"
-                  title="Module 7 Demonstration 1"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                3D object dimensioning with shape classification and contour bounding.
-              </p>
-            </div>
-
-            {/* Demonstration 2 */}
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
-              <h4 className="font-semibold text-gray-800 mb-2 text-center">
-                Demonstration 2: Continuous Room Dimension Estimation from Stereo Videos
-              </h4>
-              <div className="w-full max-w-xs aspect-[9/16] bg-black rounded-lg overflow-hidden shadow">
-                <iframe
-                  className="w-full h-full border-0"
-                  src="https://www.youtube.com/embed/T6qNHnZRI2c"
-                  title="Module 7 Demonstration 2"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                Synchronized stereo video tracking, WLS disparity depth map, and 3D perimeter projection.
-              </p>
+        {/* Step 1: Camera Calibration Dataset */}
+        <section
+          style={{
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            marginBottom: '32px',
+          }}
+        >
+          <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-4">
+            <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
+              Step 1: Stereo Camera Calibration Dataset
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCalibViewMode('left')}
+                className={`px-3 py-1 text-xs font-semibold rounded transition ${
+                  calibViewMode === 'left' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Left Camera (18)
+              </button>
+              <button
+                onClick={() => setCalibViewMode('right')}
+                className={`px-3 py-1 text-xs font-semibold rounded transition ${
+                  calibViewMode === 'right' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Right Camera (18)
+              </button>
             </div>
           </div>
-        </section>
 
-        {/* ========================================================================= */}
-        {/* Requirement 1: Stereo Camera Calibration */}
-        {/* ========================================================================= */}
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold border-b border-gray-200 pb-2 mb-4 text-gray-800">
-            Requirement 1: Stereo Camera Calibration
-          </h3>
-          <p className="text-gray-600 mb-4 leading-relaxed">
-            Stereo camera calibration fixes the single-camera intrinsics calculated in Module 2 (K₁ = K₂), solving for the stereo extrinsics: rotation matrix (R), translation vector (T, baseline B = 343.45 mm), Essential Matrix (E), Fundamental Matrix (F), and stereo rectification matrices (R₁, R₂, P₁, P₂, Q) across 17 valid checkerboard pairs.
+          <p style={{ marginBottom: '20px', color: '#4b5563', lineHeight: '1.5' }}>
+            Below are the 18 stereo checkerboard calibration pairs (36 total Left & Right images captured with a smartphone camera) used to find chessboard corners, solve for stereo extrinsics, and compute the stereo baseline (B = 343.45 mm) and rectification parameters. Pair 5 was excluded due to an occluded checkerboard in the right view.
           </p>
 
-          {/* Calibration Matrices & Data Graphics */}
-          <div className="space-y-4 mb-6">
-            <h4 className="font-semibold text-lg text-gray-700">Stereo Calibration Results & Matrices</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-gray-200 rounded-lg overflow-hidden p-2 bg-gray-50">
-                <p className="text-center font-medium text-sm text-gray-700 mb-2">Calibration Parameters & Baseline</p>
-                <img
-                  src={`${baseUrl}module7/Stereo_Calibration_Data.png`}
-                  alt="Stereo Calibration Data"
-                  className="w-full h-auto rounded border border-gray-200"
-                />
-              </div>
-              <div className="border border-gray-200 rounded-lg overflow-hidden p-2 bg-gray-50">
-                <p className="text-center font-medium text-sm text-gray-700 mb-2">Camera & Rectification Matrices (Part 1)</p>
-                <img
-                  src={`${baseUrl}module7/Stereo_Calibration_Matrices_1.png`}
-                  alt="Stereo Calibration Matrices 1"
-                  className="w-full h-auto rounded border border-gray-200"
-                />
-              </div>
-            </div>
-            <div className="border border-gray-200 rounded-lg overflow-hidden p-2 bg-gray-50">
-              <p className="text-center font-medium text-sm text-gray-700 mb-2">Rectification & Projection Matrices (Part 2)</p>
+          {/* Module 2-style flex-wrap gallery (static, non-interactive) */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+            {CALIBRATION_PAIRS.map((p) => {
+              const imgFile = calibViewMode === 'left' ? p.left : p.right;
+              const folder = calibViewMode === 'left' ? 'left_images' : 'right_images';
+
+              return (
+                <div
+                  key={p.pairNum}
+                  style={{
+                    backgroundColor: '#f9fafb',
+                    padding: '6px',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '110px',
+                  }}
+                >
+                  <img
+                    src={`${baseUrl}Module7/${folder}/${imgFile}`}
+                    alt={`Pair ${p.pairNum}`}
+                    style={{
+                      height: '80px',
+                      width: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '4px',
+                      border: '1px solid #d1d5db',
+                      marginBottom: '4px',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      color: '#4b5563',
+                      width: '100%',
+                      textAlign: 'center',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={imgFile}
+                  >
+                    Pair {p.pairNum} {!p.valid && '(Skip)'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Calibration Matrices Diagrams */}
+          <div className="mt-6 space-y-4">
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Calibration Parameters & Matrices</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', overflow: 'hidden' }}>
               <img
-                src={`${baseUrl}module7/Stereo_Calibration_Matrices_2.png`}
-                alt="Stereo Calibration Matrices 2"
-                className="w-full max-w-2xl mx-auto h-auto rounded border border-gray-200"
+                src={`${baseUrl}Module7/Stereo_Calibration_Data_crop.png`}
+                alt="Calibration Data"
+                style={{ display: 'block', width: '100%', maxWidth: '860px', height: 'auto', margin: '0 auto', borderRadius: '4px', border: '1px solid #e5e7eb', boxSizing: 'border-box' }}
+              />
+              <img
+                src={`${baseUrl}Module7/Stereo_Calibration_Matrices_1_crop.png`}
+                alt="Calibration Matrices 1"
+                style={{ display: 'block', width: '100%', maxWidth: '560px', height: 'auto', margin: '0 auto', borderRadius: '4px', border: '1px solid #e5e7eb', boxSizing: 'border-box' }}
+              />
+              <img
+                src={`${baseUrl}Module7/Stereo_Calibration_Matrices_2_crop.png`}
+                alt="Calibration Matrices 2"
+                style={{ display: 'block', width: '100%', maxWidth: '560px', height: 'auto', margin: '0 auto', borderRadius: '4px', border: '1px solid #e5e7eb', boxSizing: 'border-box' }}
               />
             </div>
           </div>
 
-          {/* Interactive Stereo Checkerboard Pair Viewer */}
-          <div className="mt-6">
-            <h4 className="font-semibold text-lg text-gray-700 mb-2">
-              Checkerboard Image Dataset (18 Stereo Pairs)
-            </h4>
-            <p className="text-sm text-gray-500 mb-3">
-              Select a pair below to view the synchronized Left and Right checkerboard images used in stereo calibration.
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {CALIBRATION_PAIRS.map((p, idx) => (
-                <button
-                  key={p.pairNum}
-                  onClick={() => setSelectedCalibIndex(idx)}
-                  className={`px-3 py-1 text-xs font-semibold rounded transition ${
-                    selectedCalibIndex === idx
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                  }`}
-                >
-                  Pair {p.pairNum} {p.valid ? '' : '(Skipped)'}
-                </button>
-              ))}
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-gray-700 text-sm">
-                  Displaying Pair {currentCalib.pairNum}: {currentCalib.left} & {currentCalib.right}
-                </span>
-                <span
-                  className={`text-xs px-2.5 py-1 rounded-full font-bold ${
-                    currentCalib.valid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                  }`}
-                >
-                  {currentCalib.valid ? 'Valid Calibration Pair' : 'Skipped (Occluded Pattern)'}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="text-center">
-                  <span className="text-xs font-semibold text-gray-500 mb-1 block">Left Camera View</span>
-                  <img
-                    src={`${baseUrl}module7/left_images/${currentCalib.left}`}
-                    alt={`Left calibration pair ${currentCalib.pairNum}`}
-                    className="w-full h-64 object-contain bg-black rounded border border-gray-200"
-                  />
-                </div>
-                <div className="text-center">
-                  <span className="text-xs font-semibold text-gray-500 mb-1 block">Right Camera View</span>
-                  <img
-                    src={`${baseUrl}module7/right_images/${currentCalib.right}`}
-                    alt={`Right calibration pair ${currentCalib.pairNum}`}
-                    className="w-full h-64 object-contain bg-black rounded border border-gray-200"
-                  />
-                </div>
-              </div>
-            </div>
+          {/* Calibration Terminal Output */}
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Calibration Terminal Output</h4>
+            <pre
+              style={{
+                backgroundColor: '#111827',
+                color: '#60a5fa',
+                padding: '16px',
+                borderRadius: '8px',
+                overflowX: 'auto',
+                fontSize: '13px',
+                maxHeight: '260px',
+                overflowY: 'auto',
+                textAlign: 'left',
+                margin: 0,
+              }}
+            >
+              {calibLog}
+            </pre>
           </div>
 
-          {/* Terminal Output Log */}
-          <div className="mt-6">
-            <h4 className="font-semibold text-gray-800 mb-2 text-sm">Calibration Terminal Output Log</h4>
-            <pre className="bg-gray-900 text-blue-400 p-4 rounded-lg overflow-x-auto text-xs max-h-64 overflow-y-auto font-mono">
-              {calibLog}
+          {/* Static calibration JSON from the completed personal experiment */}
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Stereo Calibration JSON (Completed Experiment)</h4>
+            <pre
+              style={{
+                backgroundColor: '#111827',
+                color: '#a7f3d0',
+                padding: '16px',
+                borderRadius: '8px',
+                overflowX: 'auto',
+                fontSize: '13px',
+                maxHeight: '360px',
+                overflowY: 'auto',
+                textAlign: 'left',
+                margin: 0,
+              }}
+            >
+              {stereoCalibrationParamsJson}
             </pre>
           </div>
         </section>
 
-        {/* ========================================================================= */}
-        {/* Requirement 2: 3D Object Size and Shape Estimation */}
-        {/* ========================================================================= */}
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold border-b border-gray-200 pb-2 mb-4 text-gray-800">
-            Requirement 2: 3D Object Size and Shape Estimation
-          </h3>
-          <p className="text-gray-600 mb-4 leading-relaxed">
-            Estimates 3D physical dimensions and shapes of 20 household objects from calibrated stereo pairs. Disparity is computed across corresponding features and triangulated into 3D world space using <code>cv2.triangulatePoints</code>. Each object is classified as either <strong>RECTANGULAR</strong> or <strong>CIRCULAR</strong> based on geometric circularity and contour fill ratio.
+        {/* Step 2: Object Measurement Dataset */}
+        <section
+          style={{
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            marginBottom: '32px',
+          }}
+        >
+          <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-4">
+            <h3 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
+              Step 2: Object Measurement Dataset (Calibrated Stereo)
+            </h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setObjViewMode('left')}
+                className={`px-3 py-1 text-xs font-semibold rounded transition ${
+                  objViewMode === 'left' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Left Views (20)
+              </button>
+              <button
+                onClick={() => setObjViewMode('right')}
+                className={`px-3 py-1 text-xs font-semibold rounded transition ${
+                  objViewMode === 'right' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Right Views (20)
+              </button>
+            </div>
+          </div>
+
+          <p style={{ marginBottom: '20px', color: '#4b5563', lineHeight: '1.5' }}>
+            Below are the 20 object measurement stereo pairs (the same household objects from Module 2) processed with calibrated stereo parameters. Unlike Module 2, where the object distance Zworld was measured and hardcoded, calibrated stereo dynamically estimates Zworld from disparity triangulation: Xworld = (Xim * Zworld) / fx and Yworld = (Yim * Zworld) / fy.
           </p>
 
-          {/* Measurement Experiment Results Graphic */}
-          <div className="mb-6 border border-gray-200 rounded-lg overflow-hidden p-2 bg-gray-50">
-            <p className="text-center font-medium text-sm text-gray-700 mb-2">
-              Experimental Measurement Results & Shape Analysis (20 Objects)
-            </p>
-            <img
-              src={`${baseUrl}module7/Stereo_Experiment_Results.png`}
-              alt="Stereo Object Measurement Experiment Results"
-              className="w-full h-auto rounded border border-gray-200"
-            />
-          </div>
+          {/* Module 2-style flex-wrap gallery (static, non-interactive) */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
+            {OBJECT_ITEMS.map((item) => {
+              const imgFile = objViewMode === 'left' ? item.left : item.right;
+              const folder = objViewMode === 'left' ? 'stereo_measurements_left' : 'stereo_measurements_right';
 
-          {/* Interactive Object Dataset Viewer */}
-          <div className="mt-6">
-            <h4 className="font-semibold text-lg text-gray-700 mb-2">
-              Stereo Object Measurement Dataset (20 Objects)
-            </h4>
-            <p className="text-sm text-gray-500 mb-3">
-              Select an object to inspect its rectified Left and Right stereo measurement pair.
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {OBJECT_ITEMS.map((item, idx) => (
-                <button
+              return (
+                <div
                   key={item.id}
-                  onClick={() => setSelectedObjIndex(idx)}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded transition ${
-                    selectedObjIndex === idx
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                  }`}
+                  style={{
+                    backgroundColor: '#f9fafb',
+                    padding: '6px',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '110px',
+                  }}
                 >
-                  {item.name}
-                </button>
-              ))}
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-gray-800 text-sm">
-                  {currentObj.name} (Object {selectedObjIndex + 1} of {OBJECT_ITEMS.length})
-                </span>
-                <span className="text-xs text-gray-500">
-                  Left: <code>{currentObj.left}</code> | Right: <code>{currentObj.right}</code>
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="text-center">
-                  <span className="text-xs font-semibold text-gray-500 mb-1 block">Left Stereo View</span>
                   <img
-                    src={`${baseUrl}module7/stereo_measurements_left/${currentObj.left}`}
-                    alt={`${currentObj.name} Left View`}
-                    className="w-full h-64 object-contain bg-black rounded border border-gray-200"
+                    src={`${baseUrl}Module7/${folder}/${imgFile}`}
+                    alt={item.name}
+                    style={{
+                      height: '80px',
+                      width: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '4px',
+                      border: '1px solid #d1d5db',
+                      marginBottom: '4px',
+                    }}
                   />
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      color: '#4b5563',
+                      width: '100%',
+                      textAlign: 'center',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title={item.name}
+                  >
+                    {item.name}
+                  </span>
                 </div>
-                <div className="text-center">
-                  <span className="text-xs font-semibold text-gray-500 mb-1 block">Right Stereo View</span>
-                  <img
-                    src={`${baseUrl}module7/stereo_measurements_right/${currentObj.right}`}
-                    alt={`${currentObj.name} Right View`}
-                    className="w-full h-64 object-contain bg-black rounded border border-gray-200"
-                  />
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
 
-          {/* Terminal Output Log */}
-          <div className="mt-6">
-            <h4 className="font-semibold text-gray-800 mb-2 text-sm">Object Dimension Terminal Output Log</h4>
-            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-xs max-h-72 overflow-y-auto font-mono">
+          {/* Measurement Terminal Output */}
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Measurement Terminal Output</h4>
+            <pre
+              style={{
+                backgroundColor: '#111827',
+                color: '#4ade80',
+                padding: '16px',
+                borderRadius: '8px',
+                overflowX: 'auto',
+                fontSize: '13px',
+                maxHeight: '320px',
+                overflowY: 'auto',
+                textAlign: 'left',
+                margin: 0,
+              }}
+            >
               {dimLog}
             </pre>
           </div>
         </section>
 
-        {/* ========================================================================= */}
-        {/* Requirement 3: Continuous Room Dimension Estimation from Stereo Videos */}
-        {/* ========================================================================= */}
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold border-b border-gray-200 pb-2 mb-4 text-gray-800">
-            Requirement 3: Continuous Room Dimension Estimation from Stereo Videos
+        {/* Step 3: Validation & Error Statistics */}
+        <section
+          style={{
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            marginBottom: '32px',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              borderBottom: '1px solid #e5e7eb',
+              paddingBottom: '8px',
+              marginBottom: '16px',
+              marginTop: '0',
+            }}
+          >
+            Step 3: Object Dimensions Validation & Error Statistics
           </h3>
-          <p className="text-gray-600 mb-4 leading-relaxed">
-            Continuously processes synchronized stereo video streams of an outdoor patio room across 360 frames. Applies dynamic uncropped stereo rectification ($\alpha = 0.85$) to preserve the entire camera field of view, computes high-density disparity depth maps using StereoSGBM + Weighted Least Squares (WLS) filtering, detects the 2D perimeter of the wall, and extrapolates true 3D room dimensions via RANSAC plane fitting and camera ray-casting.
+          <p style={{ marginBottom: '24px', color: '#4b5563', lineHeight: '1.5' }}>
+            Below are the experimental results computing the real-world 2D dimensions of 20 objects using calibrated stereo triangulation, alongside the calculated statistical error metrics (from Report Page 3).
           </p>
 
-          {/* Room Dimensions Graphic */}
-          <div className="mb-6 border border-gray-200 rounded-lg overflow-hidden p-2 bg-gray-50">
-            <p className="text-center font-medium text-sm text-gray-700 mb-2">
-              Patio Room Geometry, Boundary Alignment, & 3D Extrapolation
-            </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <img
-              src={`${baseUrl}module7/Stereo_Room_Dimensions.png`}
-              alt="Stereo Room Dimensions Analysis"
-              className="w-full h-auto rounded border border-gray-200"
+              src={`${baseUrl}Module7/Stereo_Experiment_Results.png`}
+              alt="Stereo Object Dimension Results"
+              style={{
+                width: '100%',
+                height: 'auto',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+              }}
             />
           </div>
+        </section>
 
-          {/* Key Metrics Display Card */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6">
-            <h4 className="text-blue-900 font-bold text-lg mb-3">Estimated Room Dimensions Summary</h4>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-              <div className="bg-white p-3 rounded shadow-sm border border-blue-100">
-                <span className="text-xs text-gray-500 block uppercase font-semibold">Room Width</span>
-                <span className="text-xl font-bold text-blue-900">2.528 m</span>
-                <span className="text-xs text-gray-600 block">8 ft 3.5 in</span>
+        {/* Step 4: Continuous Room Dimension Estimation from Stereo Videos (Last Part of Report) */}
+        <section
+          style={{
+            backgroundColor: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            marginBottom: '32px',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              borderBottom: '1px solid #e5e7eb',
+              paddingBottom: '8px',
+              marginBottom: '16px',
+              marginTop: '0',
+            }}
+          >
+            Step 4: Continuous Room Dimension Estimation from Stereo Videos
+          </h3>
+          <p style={{ marginBottom: '20px', color: '#4b5563', lineHeight: '1.5' }}>
+            Demonstration of finding the dimensions of a room using continuous stereo video streams (Report Page 6). Using the same calibrated stereo setup, stationary video footage of an outdoor patio wall was captured from two translated baseline positions (6 seconds duration at 59.85 FPS, 360 frames total). Assuming a rectangular room geometry derived from the primary wall, the script estimates real-world width, height, depth, floor area, and volume.
+          </p>
+
+          {/* The 2 Videos Supplied for the Last Part of the Report */}
+          <div className="mb-6">
+            <h4 style={{ fontWeight: 'bold', marginBottom: '12px', fontSize: '16px' }}>
+              Stationary Stereo Video Streams (Patio Wall)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
+                <h5 className="font-semibold text-gray-800 mb-2 text-sm text-center">
+                  Left Camera Video Stream (video_LEFT.mp4)
+                </h5>
+                <div className="w-full max-w-xs aspect-[9/16] bg-black rounded-lg overflow-hidden shadow">
+                  <iframe
+                    className="w-full h-full border-0"
+                    src="https://www.youtube.com/embed/W1lUVtJKRtM"
+                    title="Patio Wall Left View Video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Stationary left video footage (6s @ 59.85 FPS)
+                </p>
               </div>
-              <div className="bg-white p-3 rounded shadow-sm border border-blue-100">
-                <span className="text-xs text-gray-500 block uppercase font-semibold">Room Height</span>
-                <span className="text-xl font-bold text-blue-900">1.294 m</span>
-                <span className="text-xs text-gray-600 block">4 ft 2.9 in</span>
-              </div>
-              <div className="bg-white p-3 rounded shadow-sm border border-blue-100">
-                <span className="text-xs text-gray-500 block uppercase font-semibold">Wall Depth (Z)</span>
-                <span className="text-xl font-bold text-blue-900">3.250 m</span>
-                <span className="text-xs text-gray-600 block">10 ft 8.0 in</span>
-              </div>
-              <div className="bg-white p-3 rounded shadow-sm border border-blue-100">
-                <span className="text-xs text-gray-500 block uppercase font-semibold">Floor Area</span>
-                <span className="text-xl font-bold text-blue-900">8.22 m²</span>
-                <span className="text-xs text-gray-600 block">88.4 sq ft</span>
-              </div>
-              <div className="bg-white p-3 rounded shadow-sm border border-blue-100">
-                <span className="text-xs text-gray-500 block uppercase font-semibold">Room Volume</span>
-                <span className="text-xl font-bold text-blue-900">10.63 m³</span>
-                <span className="text-xs text-gray-600 block">375.4 cu ft</span>
+
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
+                <h5 className="font-semibold text-gray-800 mb-2 text-sm text-center">
+                  Right Camera Video Stream (video_RIGHT.mp4)
+                </h5>
+                <div className="w-full max-w-xs aspect-[9/16] bg-black rounded-lg overflow-hidden shadow">
+                  <iframe
+                    className="w-full h-full border-0"
+                    src="https://www.youtube.com/embed/T6qNHnZRI2c"
+                    title="Patio Wall Right View Video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Stationary right video footage (6s @ 59.85 FPS)
+                </p>
               </div>
             </div>
-            <p className="text-xs text-blue-700 mt-3 text-center">
-              Evaluated over 360 video frames @ 59.85 FPS with continuous temporal Exponential Moving Average (EMA) smoothing.
-            </p>
           </div>
 
-          {/* Ground Truth Comparison & Error Analysis Table */}
-          <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-5">
-            <h4 className="font-semibold text-lg text-gray-800 mb-2">Ground Truth vs. Stereo Script Estimate Comparison</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              Comparison between physical tape-measured ground truth values and 3D stereo reconstruction estimates on the outdoor patio wall:
-            </p>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-left bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                <thead className="bg-gray-100 text-gray-700 font-semibold border-b border-gray-200">
-                  <tr>
-                    <th className="py-3 px-4">Dimension</th>
-                    <th className="py-3 px-4">True Measurement</th>
-                    <th className="py-3 px-4">New Script Estimate</th>
-                    <th className="py-3 px-4">Absolute Error</th>
-                    <th className="py-3 px-4">Percentage Error</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y border-t border-gray-200 text-gray-800">
-                  <tr className="hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-bold">Width</td>
-                    <td className="py-3 px-4">2.965 m (116.75 in)</td>
-                    <td className="py-3 px-4">2.528 m</td>
-                    <td className="py-3 px-4">0.437 m</td>
-                    <td className="py-3 px-4 font-semibold text-orange-600">14.75%</td>
-                  </tr>
-                  <tr className="hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-bold">Height</td>
-                    <td className="py-3 px-4">2.146 m (84.5 in)</td>
-                    <td className="py-3 px-4">1.294 m</td>
-                    <td className="py-3 px-4">0.852 m</td>
-                    <td className="py-3 px-4 font-semibold text-red-600">39.71%</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-              * Note: The observed error stems primarily from the fixed stereo baseline calibration geometry, slight disparity smoothing across non-textured patio siding, and optical projection onto the slanted roofline.
-            </p>
-          </div>
-
-          {/* Wall Bounding Box Snapshots Viewer */}
+          {/* Wall Bounding Box Snapshots (First & Last Frames) */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
-              <h4 className="font-semibold text-lg text-gray-700">Wall Perimeter & Bounding Box Snapshots</h4>
+              <h4 style={{ fontWeight: 'bold', margin: 0, fontSize: '16px' }}>
+                Wall Boundary Tracking Snapshots (First & Last Frames)
+              </h4>
               <div className="flex gap-2">
                 <button
                   onClick={() => setSelectedFrameView('first')}
@@ -504,7 +581,7 @@ const Module7App: React.FC = () => {
                     ? 'Frame 1: Width 2.528 m (8 ft 3.5 in) | Height 1.294 m (4 ft 2.9 in)'
                     : 'Frame 360: Width 2.531 m (8 ft 3.6 in) | Height 1.300 m (4 ft 3.2 in)'}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 font-mono">
                   {selectedFrameView === 'first'
                     ? 'wall_bbox_first_frame_LEFT.jpg & wall_bbox_first_frame_RIGHT.jpg'
                     : 'wall_bbox_last_frame_LEFT.jpg & wall_bbox_last_frame_RIGHT.jpg'}
@@ -515,7 +592,7 @@ const Module7App: React.FC = () => {
                 <div className="text-center">
                   <span className="text-xs font-semibold text-gray-500 mb-1 block">Left Camera View</span>
                   <img
-                    src={`${baseUrl}module7/${
+                    src={`${baseUrl}Module7/${
                       selectedFrameView === 'first' ? 'wall_bbox_first_frame_LEFT.jpg' : 'wall_bbox_last_frame_LEFT.jpg'
                     }`}
                     alt={`${selectedFrameView} Frame Left`}
@@ -525,7 +602,7 @@ const Module7App: React.FC = () => {
                 <div className="text-center">
                   <span className="text-xs font-semibold text-gray-500 mb-1 block">Right Camera View</span>
                   <img
-                    src={`${baseUrl}module7/${
+                    src={`${baseUrl}Module7/${
                       selectedFrameView === 'first' ? 'wall_bbox_first_frame_RIGHT.jpg' : 'wall_bbox_last_frame_RIGHT.jpg'
                     }`}
                     alt={`${selectedFrameView} Frame Right`}
@@ -536,10 +613,38 @@ const Module7App: React.FC = () => {
             </div>
           </div>
 
-          {/* Terminal Output Log */}
-          <div>
-            <h4 className="font-semibold text-gray-800 mb-2 text-sm">Room Dimensions Terminal Output Log</h4>
-            <pre className="bg-gray-900 text-yellow-400 p-4 rounded-lg overflow-x-auto text-xs max-h-72 overflow-y-auto font-mono">
+          {/* Diagram Graphic */}
+          <div className="mb-6">
+            <img
+              src={`${baseUrl}Module7/Stereo_Room_Dimensions.png`}
+              alt="Stereo Room Dimensions Analysis"
+              style={{
+                width: '100%',
+                height: 'auto',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+              }}
+            />
+          </div>
+
+          {/* Room Dimensions Terminal Output */}
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>Room Dimensions Terminal Output</h4>
+            <pre
+              style={{
+                backgroundColor: '#111827',
+                color: '#facc15',
+                padding: '16px',
+                borderRadius: '8px',
+                overflowX: 'auto',
+                fontSize: '13px',
+                maxHeight: '300px',
+                overflowY: 'auto',
+                textAlign: 'left',
+                margin: 0,
+              }}
+            >
               {roomLog}
             </pre>
           </div>

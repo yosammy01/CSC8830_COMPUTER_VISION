@@ -10,6 +10,7 @@ import Module4Live from './pages/Module4Live';
 import Module56 from './pages/Module56';
 import Module56Live from './pages/Module56Live';
 import Module7 from './pages/Module7';
+import Module7Live from './pages/Module7Live';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route path="/module56" element={<Module56 />} />
         <Route path="/module56/live" element={<Module56Live />} />
         <Route path="/module7" element={<Module7 />} />
+        <Route path="/module7/live" element={<Module7Live />} />
       </Routes>
     </Router>
   );

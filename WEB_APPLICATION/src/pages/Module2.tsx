@@ -41,6 +41,7 @@ const Module2App: React.FC = () => {
             <Link to="/module2/live" style={{ display: 'block', backgroundColor: '#10b981', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>Try Live Interactive Demo</Link>
             <a href="https://github.com/yosammy01/CSC8830_COMPUTER_VISION/tree/main/MODULE2" target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#1f2937', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>GitHub Repo</a>
             <a href={`${import.meta.env.BASE_URL}Module2/Module2_Report.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Final PDF</a>
+            <a href={`${import.meta.env.BASE_URL}Module2/Theory.pdf`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', backgroundColor: '#4f46e5', color: 'white', padding: '10px 20px', borderRadius: '6px', textAlign: 'center', textDecoration: 'none', fontWeight: 'bold' }}>View Theory PDF</a>
           </div>
         </section>
 
