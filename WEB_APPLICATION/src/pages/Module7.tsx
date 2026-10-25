@@ -168,6 +168,21 @@ const Module7App: React.FC = () => {
           </div>
         </section>
 
+        {/* Video Demonstration */}
+        <section style={{ backgroundColor: 'white', padding: '24px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '24px', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '16px', marginTop: '0' }}>Working Demonstration</h3>
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+            <iframe
+              src="https://www.youtube.com/embed/dK5RpxeqG9M"
+              title="Module 7 Demonstration"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+            ></iframe>
+          </div>
+        </section>
+
         {/* Step 1: Camera Calibration Dataset */}
         <section
           style={{

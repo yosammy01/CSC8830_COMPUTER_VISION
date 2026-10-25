@@ -2,11 +2,11 @@
 MODULE 7 - REQUIREMENT 3: STEREO ROOM DIMENSION ESTIMATION SUMMARY
 ================================================================================
 
-Left Video Source:       MODULE7/room_videos_left/video_LEFT.mp4
-Right Video Source:      MODULE7/room_videos_right/video_RIGHT.mp4
-Calibration File:        MODULE7/stereo_calibration_params.json
+Left Video Source:       C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\room_videos_left\video_LEFT.mp4
+Right Video Source:      C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\room_videos_right\video_RIGHT.mp4
+Calibration File:        C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\stereo_calibration_params.json
 Total Video Frames:      360
-Processing Speed:        2.05 FPS (Total: 87.81s)
+Processing Speed:        3.42 FPS (Total: 52.56s)
 Annotated Video:         C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\room_dimensions_annotated.mp4
 
 --------------------------------------------------------------------------------

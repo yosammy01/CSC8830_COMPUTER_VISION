@@ -2,32 +2,31 @@
 MODULE 7 - REQUIREMENT 3: STEREO ROOM DIMENSION ESTIMATION FROM VIDEOS
 ================================================================================
 Video Pair Selected:
-  Left View:  MODULE7/room_videos_left/video_LEFT.mp4
-  Right View: MODULE7/room_videos_right/video_RIGHT.mp4
+  Left View:  C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\room_videos_left\video_LEFT.mp4
+  Right View: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\room_videos_right\video_RIGHT.mp4
 Native Video Resolution: 1080x1920 | FPS: 59.85 | Frames: 360
-Loading stereo calibration from: MODULE7/stereo_calibration_params.json
+Loading stereo calibration from: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\stereo_calibration_params.json
 Base calibration loaded. Baseline: 343.45 mm (34.35 cm)
-WLS Disparity Filter initialized successfully.
 Maps initialized for resolution 1080x1920 (fx=1022.1, fy=1022.1).
 
 Starting video processing and wall dimension estimation loop...
 Press 'SPACE' to pause, 'S' to save snapshot, 'Q' or 'ESC' to exit.
 
-[Frame 0001/0360] Width: 2.528m (99.5in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 4.4
-[Frame 0030/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 3.4
-[Frame 0060/0360] Width: 2.527m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 5.2
-[Frame 0090/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.7
-[Frame 0120/0360] Width: 2.528m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 6.3
-[Frame 0150/0360] Width: 2.534m (99.8in) | Height: 1.294m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.24m^2 | FPS: 6.3
-[Frame 0180/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.1in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.1
-[Frame 0210/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 5.4
-[Frame 0240/0360] Width: 2.523m (99.3in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 6.5
-[Frame 0270/0360] Width: 2.524m (99.4in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 5.4
-[Frame 0300/0360] Width: 2.527m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 6.5
-[Frame 0330/0360] Width: 2.529m (99.6in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 5.9
-[Frame 0360/0360] Width: 2.531m (99.6in) | Height: 1.300m (51.2in) | Depth: 3.250m (128.0in) | Area: 8.23m^2 | FPS: 6.6
+[Frame 0001/0360] Width: 2.528m (99.5in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 3.5
+[Frame 0030/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 16.0
+[Frame 0060/0360] Width: 2.527m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 14.7
+[Frame 0090/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 15.7
+[Frame 0120/0360] Width: 2.528m (99.5in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 11.5
+[Frame 0150/0360] Width: 2.534m (99.8in) | Height: 1.294m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.24m^2 | FPS: 15.1
+[Frame 0180/0360] Width: 2.528m (99.5in) | Height: 1.297m (51.1in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 15.4
+[Frame 0210/0360] Width: 2.525m (99.4in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 11.4
+[Frame 0240/0360] Width: 2.523m (99.3in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 11.2
+[Frame 0270/0360] Width: 2.524m (99.4in) | Height: 1.294m (50.9in) | Depth: 3.250m (128.0in) | Area: 8.20m^2 | FPS: 11.3
+[Frame 0300/0360] Width: 2.527m (99.5in) | Height: 1.297m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.21m^2 | FPS: 14.6
+[Frame 0330/0360] Width: 2.529m (99.6in) | Height: 1.295m (51.0in) | Depth: 3.250m (128.0in) | Area: 8.22m^2 | FPS: 15.0
+[Frame 0360/0360] Width: 2.531m (99.6in) | Height: 1.300m (51.2in) | Depth: 3.250m (128.0in) | Area: 8.23m^2 | FPS: 11.2
 
-Processing Complete. 360 video frames evaluated in 87.81s (2.0 FPS).
+Processing Complete. 360 video frames evaluated in 52.56s (3.4 FPS).
 Annotated composite video saved to: C:\Users\samue\source\repos\CSC8830_COMPUTER_VISION\MODULE7\output\room_dimensions_annotated.mp4
 
 ================================================================================
